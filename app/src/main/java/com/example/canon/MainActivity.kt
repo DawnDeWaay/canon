@@ -7,16 +7,12 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Home
-import androidx.compose.material.icons.rounded.Search
+import androidx.compose.material.icons.rounded.LibraryMusic
 import androidx.compose.material.icons.rounded.Settings
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -29,11 +25,8 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.PreviewScreenSizes
-import androidx.compose.ui.unit.dp
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.NavHost
@@ -61,8 +54,9 @@ class MainActivity : ComponentActivity() {
 
 sealed class Screen(val route: String, val title: String, val icon: ImageVector) {
     object Home : Screen("home", "Home", Icons.Rounded.Home)
-    object Search : Screen("search", "Search", Icons.Rounded.Search)
+    object Library : Screen("library", "Library", Icons.Rounded.LibraryMusic)
     object Settings : Screen("settings", "Settings", Icons.Rounded.Settings)
+    object Onboarding : Screen("onboarding", "Onboarding", Icons.Rounded.Settings)
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -70,10 +64,11 @@ sealed class Screen(val route: String, val title: String, val icon: ImageVector)
 @Composable
 fun CanonApp() {
     val navController = rememberNavController()
-    val items = listOf(
+    val navItems = listOf(
         Screen.Home,
-        Screen.Search,
+        Screen.Library,
         Screen.Settings,
+        Screen.Onboarding,
     )
 
     Scaffold(
@@ -82,7 +77,7 @@ fun CanonApp() {
             NavigationBar {
                 val navBackStackEntry by navController.currentBackStackEntryAsState()
                 val currentDestination = navBackStackEntry?.destination
-                items.forEach { screen ->
+                navItems.forEach { screen ->
                     NavigationBarItem(
                         icon = { Icon(screen.icon, contentDescription = screen.title) },
                         label = { Text(screen.title) },
@@ -101,114 +96,23 @@ fun CanonApp() {
             }
         }
     ) { innerPadding ->
-        RenderText("Canon Home", true)
-        NavHost(
-            navController = navController,
-            startDestination = Screen.Home.route,
-            modifier = Modifier.padding(innerPadding),
-            enterTransition = {
-                fadeIn(animationSpec = tween(300))
-            },
-            exitTransition = {
-                fadeOut(animationSpec = tween(300))
+        Box(modifier = Modifier.padding(innerPadding)) {
+            NavHost(
+                navController = navController,
+                startDestination = Screen.Home.route,
+                enterTransition = {
+                    fadeIn(animationSpec = tween(300))
+                },
+                exitTransition = {
+                    fadeOut(animationSpec = tween(300))
+                }
+            ) {
+                composable(Screen.Home.route) { HomeScreen() }
+                composable(Screen.Library.route) { LibraryScreen() }
+                composable(Screen.Settings.route) { SettingsScreen() }
+                composable(Screen.Onboarding.route) { OnboardingScreen() }
             }
-        ) {
-            composable(Screen.Home.route) { HomeScreen() }
-            composable(Screen.Search.route) { SearchScreen() }
-            composable(Screen.Settings.route) { SettingsScreen() }
         }
     }
 }
 
-@Composable
-fun HomeScreen() {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-    ) {
-        Box(
-            modifier = Modifier
-                .padding(16.dp)
-
-                .clip(RoundedCornerShape(24.dp))
-                .background(color = MaterialTheme.colorScheme.primaryContainer)
-                .padding(40.dp)
-        ) {
-            Text(
-                text = "Welcome to the Home Screen! This is the main landing page of the application.",
-                style = MaterialTheme.typography.bodyLarge,
-                color = MaterialTheme.colorScheme.onPrimaryContainer
-            )
-        }
-    }
-}
-
-@Composable
-fun SearchScreen() {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-    ) {
-        Box(
-            modifier = Modifier
-                .padding(16.dp)
-                .clip(RoundedCornerShape(24.dp))
-                .background(color = MaterialTheme.colorScheme.secondaryContainer)
-                .padding(40.dp)
-        ) {
-            Text(
-                text = "This is the Search Screen. You can look for things here.",
-                style = MaterialTheme.typography.bodyLarge,
-                color = MaterialTheme.colorScheme.onSecondaryContainer
-            )
-        }
-    }
-}
-
-@Composable
-fun SettingsScreen() {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-    ) {
-        Box(
-            modifier = Modifier
-                .padding(16.dp)
-                .clip(RoundedCornerShape(24.dp))
-                .background(color = MaterialTheme.colorScheme.tertiaryContainer)
-                .padding(40.dp)
-        ) {
-            Text(
-                text = "This is the Settings Screen. Adjust your preferences here.",
-                style = MaterialTheme.typography.bodyLarge,
-                color = MaterialTheme.colorScheme.onTertiaryContainer
-            )
-        }
-        Box(
-            modifier = Modifier
-                .padding(16.dp)
-                .clip(RoundedCornerShape(24.dp))
-                .background(color = MaterialTheme.colorScheme.tertiaryContainer)
-                .padding(40.dp)
-        ) {
-            Text(
-                text = "This is the Settings Screen. Adjust your preferences here.",
-                style = MaterialTheme.typography.bodyLarge,
-                color = MaterialTheme.colorScheme.onTertiaryContainer
-            )
-        }
-    }
-}
-
-@Composable
-fun RenderText(text: String, centered: Boolean) {
-    Text(
-        text = text,
-        style = MaterialTheme.typography.headlineLarge,
-        color = MaterialTheme.colorScheme.primary,
-        textAlign = if (centered) TextAlign.Center else TextAlign.Start,
-        modifier = Modifier
-            .padding(16.dp)
-            .fillMaxWidth()
-    )
-}

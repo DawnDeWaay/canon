@@ -43,6 +43,7 @@ dependencies {
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.compose.material3)
+//    implementation("com.squareup.retrofit2:retrofit:3.1.0-SNAPSHOT")
     implementation("androidx.compose.material:material-icons-extended:1.7.8")
     implementation("androidx.compose.material3:material3:1.5.0-alpha01")
     implementation(libs.androidx.compose.material3.adaptive.navigation.suite)
