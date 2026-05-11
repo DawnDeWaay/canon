@@ -15,11 +15,6 @@ import androidx.core.graphics.toColorInt
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun OnboardingScreen() {
-    listOf(
-        Screen.Home,
-        Screen.Library,
-        Screen.Settings,
-    )
     val spotifyButtonColors = ButtonDefaults.buttonColors(
         containerColor = Color("#1DB954".toColorInt()),
         contentColor = Color.White,

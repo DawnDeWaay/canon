@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Home
-import androidx.compose.material.icons.rounded.LibraryMusic
 import androidx.compose.material.icons.rounded.Settings
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -54,7 +53,6 @@ class MainActivity : ComponentActivity() {
 
 sealed class Screen(val route: String, val title: String, val icon: ImageVector) {
     object Home : Screen("home", "Home", Icons.Rounded.Home)
-    object Library : Screen("library", "Library", Icons.Rounded.LibraryMusic)
     object Settings : Screen("settings", "Settings", Icons.Rounded.Settings)
     object Onboarding : Screen("onboarding", "Onboarding", Icons.Rounded.Settings)
 }
@@ -66,7 +64,6 @@ fun CanonApp() {
     val navController = rememberNavController()
     val navItems = listOf(
         Screen.Home,
-        Screen.Library,
         Screen.Settings,
         Screen.Onboarding,
     )
@@ -101,14 +98,13 @@ fun CanonApp() {
                 navController = navController,
                 startDestination = Screen.Home.route,
                 enterTransition = {
-                    fadeIn(animationSpec = tween(300))
+                    fadeIn(animationSpec = tween(200))
                 },
                 exitTransition = {
-                    fadeOut(animationSpec = tween(300))
+                    fadeOut(animationSpec = tween(200))
                 }
             ) {
                 composable(Screen.Home.route) { HomeScreen() }
-                composable(Screen.Library.route) { LibraryScreen() }
                 composable(Screen.Settings.route) { SettingsScreen() }
                 composable(Screen.Onboarding.route) { OnboardingScreen() }
             }

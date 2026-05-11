@@ -6,7 +6,9 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -15,29 +17,26 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun LibraryScreen() {
-    listOf(
-        "Home",
-        "Library",
-        "Settings",
-    )
-
+fun PlaylistStackScreen() {
     Column(
         modifier = Modifier
             .fillMaxSize()
+            .verticalScroll(rememberScrollState())
     ) {
         Box(
             modifier = Modifier
                 .clip(RoundedCornerShape(24.dp))
-                .background(color = MaterialTheme.colorScheme.secondaryContainer)
-                .padding(16.dp)
+                .background(color = MaterialTheme.colorScheme.tertiaryContainer)
+                .padding(40.dp)
                 .fillMaxWidth()
         ) {
+            Box(modifier = Modifier.clip(RoundedCornerShape(8.dp))) {
+
+            }
             Text(
                 text = "lorem ipsum",
                 style = MaterialTheme.typography.bodyLarge,
-                color = MaterialTheme.colorScheme.onSecondaryContainer,
-                modifier = Modifier.padding(top = 16.dp)
+                color = MaterialTheme.colorScheme.onTertiaryContainer
             )
         }
     }

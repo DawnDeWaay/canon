@@ -27,6 +27,9 @@ fun SettingsScreen() {
                 .padding(40.dp)
                 .fillMaxWidth()
         ) {
+            Box(modifier = Modifier.clip(RoundedCornerShape(8.dp))) {
+
+            }
             Text(
                 text = "lorem ipsum",
                 style = MaterialTheme.typography.bodyLarge,
