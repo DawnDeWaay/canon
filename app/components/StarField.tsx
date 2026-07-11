@@ -1,7 +1,7 @@
 /** biome-ignore-all lint/suspicious/noArrayIndexKey: <explanation> */
 'use client';
 
-import { useEffect, useState } from 'react';
+import { type ReactNode, useEffect, useState } from 'react';
 import Star from './Star';
 
 type StarFieldProps = {
@@ -9,49 +9,106 @@ type StarFieldProps = {
   gap?: number;
   isRandom?: boolean;
   color?: string;
+  /** Width of the empty rectangle in the middle (px). Stars overlapping it are removed. */
+  holeWidth?: number;
+  /** Height of the empty rectangle in the middle (px). */
+  holeHeight?: number;
+  /** Extra padding around the hole so stars don't touch the UI box (px). */
+  holePadding?: number;
+  /** Optional UI content rendered centered in the hole. */
+  children?: ReactNode;
 };
 
-const StarField = ({ size = 64, gap = 0, isRandom = true, color }: StarFieldProps) => {
-  const [dims, setDims] = useState<{ cols: number; rows: number }>({ cols: 0, rows: 0 });
+const StarField = ({
+  size = 64,
+  gap = 0,
+  isRandom = true,
+  color,
+  holeWidth = 600,
+  holeHeight = 2000,
+  holePadding = 0,
+  children,
+}: StarFieldProps) => {
+  const [viewport, setViewport] = useState<{ w: number; h: number }>({ w: 0, h: 0 });
 
   useEffect(() => {
-    const cell = size + gap;
     const update = () => {
-      setDims({
-        cols: Math.ceil(window.innerWidth / cell),
-        rows: Math.ceil(window.innerHeight / cell),
-      });
+      setViewport({ w: window.innerWidth, h: window.innerHeight });
     };
     update();
     window.addEventListener('resize', update);
     return () => window.removeEventListener('resize', update);
-  }, [size, gap]);
+  }, []);
 
-  const total = dims.cols * dims.rows;
+  const cell = size + gap;
+  const cols = viewport.w ? Math.ceil(viewport.w / cell) : 0;
+  const rows = viewport.h ? Math.ceil(viewport.h / cell) : 0;
+  const total = cols * rows;
+
+  // Hole rect in viewport pixel coords (centered), expanded by padding.
+  const hasHole = holeWidth > 0 && holeHeight > 0;
+  const halfW = holeWidth / 2 + holePadding;
+  const halfH = holeHeight / 2 + holePadding;
+  const cx = viewport.w / 2;
+  const cy = viewport.h / 2;
+  const holeLeft = cx - halfW;
+  const holeRight = cx + halfW;
+  const holeTop = cy - halfH;
+  const holeBottom = cy + halfH;
 
   return (
-    <div
-      aria-hidden
-      className='fixed inset-0 -z-10 overflow-hidden'
-      style={{
-        display: 'grid',
-        gridTemplateColumns: `repeat(${dims.cols}, ${size}px)`,
-        gridAutoRows: `${size}px`,
-        gap,
-      }}
-    >
-      {Array.from({ length: total }).map((_, i) => (
-        <div style={{ transform: 'translateX(-40%)' }} key={i}>
-          <Star
-            key={i}
-            size={size}
-            isRandom={isRandom}
-            color={color}
-            index={Math.trunc(i / dims.cols)}
-          />
+    <>
+      <div
+        aria-hidden
+        className='fixed inset-0 -z-10 overflow-hidden'
+        style={{
+          display: 'grid',
+          gridTemplateColumns: `repeat(${cols}, ${size}px)`,
+          gridAutoRows: `${size}px`,
+          gap,
+        }}
+      >
+        {Array.from({ length: total }).map((_, i) => {
+          const col = i % cols;
+          const row = Math.trunc(i / cols);
+
+          if (hasHole) {
+            // Star's inner div is translated by -40% on X, so its bbox shifts left by 0.4*size.
+            const cellX = col * cell;
+            const cellY = row * cell;
+            const starLeft = cellX - 0.4 * size;
+            const starRight = starLeft + size;
+            const starTop = cellY;
+            const starBottom = starTop + size;
+
+            const intersects =
+              starRight > holeLeft &&
+              starLeft < holeRight &&
+              starBottom > holeTop &&
+              starTop < holeBottom;
+
+            if (intersects) {
+              // Keep the grid cell to preserve layout, but render nothing.
+              return <div key={i} />;
+            }
+          }
+
+          return (
+            <div style={{ transform: 'translateX(-40%)' }} key={i}>
+              <Star size={size} isRandom={isRandom} color={color} index={row} />
+            </div>
+          );
+        })}
+      </div>
+      {hasHole && children && (
+        <div
+          className='fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2'
+          style={{ width: holeWidth, height: holeHeight }}
+        >
+          {children}
         </div>
-      ))}
-    </div>
+      )}
+    </>
   );
 };
 
