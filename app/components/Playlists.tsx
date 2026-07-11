@@ -11,7 +11,7 @@ const Playlists = ({
   setMode: (mode: Mode) => void;
 }) => {
   return (
-    <motion.div className='w-full flex flex-col items-center justify-start gap-4 text-center'>
+    <motion.div className='w-full flex flex-col items-start justify-center gap-4 text-center'>
       <motion.div
         className='font-CircularBold text-3xl font-bold w-full text-center'
         initial={{ opacity: 0 }}
