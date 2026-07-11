@@ -2,7 +2,6 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import Star from './components/Star';
 import StarField from './components/StarField';
 import { useColor } from './context/ColorContext';
 
@@ -12,7 +11,13 @@ export default function Home() {
   return (
     <div className='flex flex-col flex-1 items-center justify-center'>
       <StarField />
-      <main className='flex flex-wrap flex-row flex-start w-full max-w-3xl'></main>
+      <main className='h-full w-full flex items-center justify-center p-4 select-none'>
+        <div className='h-96 w-2xl max-w-full border-black-2 overflow-hidden select-auto'>
+          <div className='bg-black/30 h-full w-full backdrop-blur-sm flex items-center justify-center flex-col gap-4'>
+            hi
+          </div>
+        </div>
+      </main>
     </div>
   );
 }

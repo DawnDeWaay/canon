@@ -5,20 +5,12 @@ import { useEffect, useState } from 'react';
 import Star from './Star';
 
 type StarFieldProps = {
-  /** Edge length of each star cell in px. Defaults to 48. */
   size?: number;
-  /** Space (px) between cells. Defaults to 0. */
   gap?: number;
-  /** Randomize per-star visibility for a sparse look. */
   isRandom?: boolean;
-  /** Explicit color override; otherwise inherits from ColorContext. */
   color?: string;
 };
 
-/**
- * Fills the viewport with a grid of <Star /> components. Sits behind page
- * content (`-z-10`) and is pointer-events-none so it never intercepts clicks.
- */
 const StarField = ({ size = 64, gap = 0, isRandom = true, color }: StarFieldProps) => {
   const [dims, setDims] = useState<{ cols: number; rows: number }>({ cols: 0, rows: 0 });
 
@@ -45,7 +37,7 @@ const StarField = ({ size = 64, gap = 0, isRandom = true, color }: StarFieldProp
         display: 'grid',
         gridTemplateColumns: `repeat(${dims.cols}, ${size}px)`,
         gridAutoRows: `${size}px`,
-        gap, // force GPU acceleration for smoother animations
+        gap,
       }}
     >
       {Array.from({ length: total }).map((_, i) => (
