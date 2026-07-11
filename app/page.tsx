@@ -1,21 +1,31 @@
 'use client';
 
 import { AnimatePresence } from 'motion/react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Splash from '@/app/components/Splash';
 import Playlist from './components/Playlist';
 import Playlists from './components/Playlists';
 import StarField from './components/StarField';
+import { useMe } from './hooks/useMe';
 import { usePlaylists } from './hooks/usePlaylists';
 
 export type Mode = 'splash' | 'playlists' | { type: 'playlist'; playlist: string };
 
 export default function Home() {
-  const [mode, setMode] = useState<Mode>('splash');
+  const [mode, setMode] = useState<Mode | null>(null);
+
+  // Check auth on load so we can send logged-in users straight to Playlists
+  // (and avoid flashing the splash to them).
+  const { data: user, isPending: authPending } = useMe();
+
+  useEffect(() => {
+    if (authPending || mode !== null) return;
+    setMode(user ? 'playlists' : 'splash');
+  }, [authPending, user, mode]);
 
   // Only query once the user has advanced past sign-in.
   const shouldFetch =
-    mode === 'playlists' || (typeof mode === 'object' && mode.type === 'playlist');
+    mode === 'playlists' || (mode !== null && typeof mode === 'object' && mode.type === 'playlist');
   const { data: playlists, isLoading, isError } = usePlaylists(shouldFetch);
 
   return (
@@ -28,7 +38,7 @@ export default function Home() {
             {mode === 'playlists' && (
               <Playlists key='playlists' playlists={playlists ?? []} setMode={setMode} />
             )}
-            {typeof mode === 'object' && mode.type === 'playlist' && (
+            {mode !== null && typeof mode === 'object' && mode.type === 'playlist' && (
               <Playlist key='playlist' playlist={mode.playlist} setMode={setMode} />
             )}
           </AnimatePresence>
