@@ -15,6 +15,11 @@ const SpotifyIcon = ({ size = 20 }: { size?: number }) => (
 );
 
 const Splash = ({ setMode }: { setMode: (mode: Mode) => void }) => {
+  const handleSignIn = () => {
+    window.location.href = `/api/auth/login?returnTo=${encodeURIComponent('/')}`;
+    setMode('playlists');
+  };
+
   return (
     <motion.div className='h-full flex flex-col items-center justify-center gap-4'>
       <motion.div
@@ -33,10 +38,10 @@ const Splash = ({ setMode }: { setMode: (mode: Mode) => void }) => {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1, transition: { delay: 0.3, duration: 0.8 } }}
         exit={{ opacity: 0 }}
-        onClick={() => setMode('signin')}
+        onClick={handleSignIn}
       >
         <SpotifyIcon />
-        Sign In with Spotify
+        Continue with Spotify
       </motion.button>
       <motion.button
         type='button'
