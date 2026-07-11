@@ -1,5 +1,6 @@
 import { motion } from 'motion/react';
 import type { Mode } from '../page';
+import { CircularProgress } from '@mui/material';
 
 const SpotifyIcon = ({ size = 20 }: { size?: number }) => (
   <svg
@@ -15,8 +16,11 @@ const SpotifyIcon = ({ size = 20 }: { size?: number }) => (
 );
 
 const Splash = ({ setMode }: { setMode: (mode: Mode) => void }) => {
+  const [loading, setLoading] = useState(false);
   const handleSignIn = () => {
+    setLoading(true);
     window.location.href = `/api/auth/login?returnTo=${encodeURIComponent('/')}`;
+    setLoading(false);
     setMode('playlists');
   };
 
@@ -40,7 +44,11 @@ const Splash = ({ setMode }: { setMode: (mode: Mode) => void }) => {
         exit={{ opacity: 0 }}
         onClick={handleSignIn}
       >
-        <SpotifyIcon />
+        {!loading ? (
+          <SpotifyIcon />
+        ) : (
+          <CircularProgress color='inherit' size='small' aria-label='Loading…' />
+        )}
         Continue with Spotify
       </motion.button>
       <motion.button
