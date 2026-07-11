@@ -3,6 +3,7 @@
 
 import { useRouter } from 'next/navigation';
 import Star from './components/Star';
+import StarField from './components/StarField';
 import { useColor } from './context/ColorContext';
 
 export default function Home() {
@@ -10,10 +11,8 @@ export default function Home() {
   const { color: contextColor } = useColor();
   return (
     <div className='flex flex-col flex-1 items-center justify-center'>
-      <main className='flex flex-wrap flex-row flex-start w-full max-w-3xl'>
-        <Star color='#00aff' />
-        <button onClick={() => router.push('/sign-in')}>Sign-in</button>
-      </main>
+      <StarField />
+      <main className='flex flex-wrap flex-row flex-start w-full max-w-3xl'></main>
     </div>
   );
 }
