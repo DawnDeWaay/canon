@@ -12,7 +12,7 @@ export default function Home() {
     <div className='flex flex-col flex-1 items-center justify-center'>
       <StarField />
       <main className='h-full w-full flex items-center justify-center p-4 select-none'>
-        <div className='h-96 w-2xl max-w-full border-black-2 overflow-hidden select-auto'>
+        <div className='h-96 w-2xl max-w-full border-black-2 overflow-hidden select-auto rounded-2xl'>
           <div className='bg-black/30 h-full w-full backdrop-blur-sm flex items-center justify-center flex-col gap-4'>
             hi
           </div>
