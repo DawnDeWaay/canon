@@ -22,8 +22,10 @@ const PlaylistCard = ({
       onClick={() => setMode({ type: 'playlist', playlist: id })}
     >
       <div className='flex flex-row items-center justify-between w-full p-1 gap-2'>
-        <div className='aspect-square ml-2 border-white border-2 rounded-md'>
-          {art ? <Image src={art} alt={title} width={10} height={10} /> : null}
+        <div className='relative aspect-square h-full ml-2 rounded-md overflow-hidden bg-neutral-800'>
+          {art ? (
+            <Image src={art} alt={title} fill sizes='64px' className='object-cover' />
+          ) : null}
         </div>
         <div className='text-white font-CircularBold text-md w-full text-start'>{title}</div>
       </div>
