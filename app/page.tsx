@@ -2,14 +2,13 @@
 
 import { AnimatePresence } from 'motion/react';
 import { useState } from 'react';
-import SignIn from '@/app/components/SignIn';
 import Splash from '@/app/components/Splash';
 import Playlist from './components/Playlist';
 import Playlists from './components/Playlists';
 import StarField from './components/StarField';
 import { usePlaylists } from './hooks/usePlaylists';
 
-export type Mode = 'splash' | 'signin' | 'playlists' | { type: 'playlist'; playlist: string };
+export type Mode = 'splash' | 'playlists' | { type: 'playlist'; playlist: string };
 
 export default function Home() {
   const [mode, setMode] = useState<Mode>('splash');
@@ -26,7 +25,6 @@ export default function Home() {
         <div className='w-150 my-12'>
           <AnimatePresence mode='wait'>
             {mode === 'splash' && <Splash key='splash' setMode={setMode} />}
-            {mode === 'signin' && <SignIn key='signin' setMode={setMode} />}
             {mode === 'playlists' && (
               <Playlists key='playlists' playlists={playlists ?? []} setMode={setMode} />
             )}
