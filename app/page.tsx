@@ -4,10 +4,10 @@ import { AnimatePresence } from 'motion/react';
 import { useState } from 'react';
 import SignIn from '@/app/components/SignIn';
 import Splash from '@/app/components/Splash';
-import StarField from './components/StarField';
 import Playlists from './components/Playlists';
+import StarField from './components/StarField';
 
-export type Mode = 'splash' | 'signin' | 'playlists' | 'playlist';
+export type Mode = 'splash' | 'signin' | 'playlists' | { type: 'playlist'; playlist: string };
 
 export default function Home() {
   const [mode, setMode] = useState<Mode>('splash');
@@ -27,6 +27,7 @@ export default function Home() {
                   { title: 'My Playlist', art: '/path/to/art.jpg' },
                   { title: 'My Playlist', art: '/path/to/art.jpg' },
                 ]}
+                setMode={setMode}
               />
             )}
           </AnimatePresence>
