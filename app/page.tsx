@@ -4,9 +4,9 @@ import { AnimatePresence } from 'motion/react';
 import { useState } from 'react';
 import SignIn from '@/app/components/SignIn';
 import Splash from '@/app/components/Splash';
+import Playlist from './components/Playlist';
 import Playlists from './components/Playlists';
 import StarField from './components/StarField';
-import Playlist from './components/Playlist';
 import { usePlaylists } from './hooks/usePlaylists';
 
 export type Mode = 'splash' | 'signin' | 'playlists' | { type: 'playlist'; playlist: string };

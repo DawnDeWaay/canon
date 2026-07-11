@@ -28,7 +28,7 @@ const SignIn = ({ setMode }: { setMode: (mode: Mode) => void }) => {
     >
       <motion.div className='font-CircularBold text-4xl font-bold'>Sign In</motion.div>
       <motion.p className='text-neutral-400 text-center max-w-sm'>
-        Connect your Spotify account to build a Canon playlist tailored to you.
+        Connect your Spotify account to build a Canon playlist
       </motion.p>
 
       <motion.button

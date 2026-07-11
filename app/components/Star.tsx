@@ -23,11 +23,16 @@ const Star = ({
 }) => {
   const { color: contextColor } = useColor();
   const resolvedColor = color ?? contextColor;
-  const chance = isRandom ? Math.random() < 0.2 : true;
-  const delay = Math.random() * 2 + index * 0.08;
+  // Persist random values across re-renders so stars don't flicker/reshuffle
+  // when the parent (e.g. Home) re-renders due to unrelated state changes.
+  const chanceRef = useRef(isRandom ? Math.random() < 0.2 : true);
+  const delayRef = useRef(Math.random() * 2 + index * 0.08);
+  const canSpinRef = useRef(Math.random() > 0.5);
+  const chance = chanceRef.current;
+  const delay = delayRef.current;
+  const canSpin = canSpinRef.current;
   const controls = useAnimationControls();
   const isHoveringRef = useRef(false);
-  const canSpin = Math.random() > 0.5;
 
   useEffect(() => {
     if (!chance) return;

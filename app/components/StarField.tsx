@@ -1,7 +1,7 @@
 /** biome-ignore-all lint/suspicious/noArrayIndexKey: <explanation> */
 'use client';
 
-import { type ReactNode, useEffect, useState } from 'react';
+import { memo, type ReactNode, useEffect, useState } from 'react';
 import Star from './Star';
 
 type StarFieldProps = {
@@ -112,4 +112,4 @@ const StarField = ({
   );
 };
 
-export default StarField;
+export default memo(StarField);
