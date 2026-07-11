@@ -28,13 +28,7 @@ const Playlists = ({
             animate={{ opacity: 1, transition: { delay: index * 0.1, duration: 0.8 } }}
             exit={{ opacity: 0 }}
           >
-            <PlaylistCard
-              key={index}
-              title={playlist.title}
-              art={playlist.art}
-              index={index}
-              setMode={setMode}
-            />
+            <PlaylistCard key={index} title={playlist.title} art={playlist.art} setMode={setMode} />
           </motion.div>
         ))}
       </div>

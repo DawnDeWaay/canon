@@ -5,12 +5,10 @@ import type { Mode } from '../page';
 const PlaylistCard = ({
   title,
   art,
-  index,
   setMode,
 }: {
   title: string;
   art: string;
-  index: number;
   setMode: (mode: Mode) => void;
 }) => {
   return (

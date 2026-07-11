@@ -6,6 +6,7 @@ import SignIn from '@/app/components/SignIn';
 import Splash from '@/app/components/Splash';
 import Playlists from './components/Playlists';
 import StarField from './components/StarField';
+import Playlist from './components/Playlist';
 
 export type Mode = 'splash' | 'signin' | 'playlists' | { type: 'playlist'; playlist: string };
 
@@ -29,6 +30,9 @@ export default function Home() {
                 ]}
                 setMode={setMode}
               />
+            )}
+            {typeof mode === 'object' && mode.type === 'playlist' && (
+              <Playlist key='playlist' playlist={mode.playlist} setMode={setMode} />
             )}
           </AnimatePresence>
         </div>
