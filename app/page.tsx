@@ -7,11 +7,17 @@ import Splash from '@/app/components/Splash';
 import Playlists from './components/Playlists';
 import StarField from './components/StarField';
 import Playlist from './components/Playlist';
+import { usePlaylists } from './hooks/usePlaylists';
 
 export type Mode = 'splash' | 'signin' | 'playlists' | { type: 'playlist'; playlist: string };
 
 export default function Home() {
   const [mode, setMode] = useState<Mode>('splash');
+
+  // Only query once the user has advanced past sign-in.
+  const shouldFetch =
+    mode === 'playlists' || (typeof mode === 'object' && mode.type === 'playlist');
+  const { data: playlists, isLoading, isError } = usePlaylists(shouldFetch);
 
   return (
     <div className='flex flex-col flex-1 items-center justify-center'>
@@ -22,19 +28,20 @@ export default function Home() {
             {mode === 'splash' && <Splash key='splash' setMode={setMode} />}
             {mode === 'signin' && <SignIn key='signin' setMode={setMode} />}
             {mode === 'playlists' && (
-              <Playlists
-                key='playlists'
-                playlists={[
-                  { title: 'My Playlist', art: '/path/to/art.jpg' },
-                  { title: 'My Playlist', art: '/path/to/art.jpg' },
-                ]}
-                setMode={setMode}
-              />
+              <Playlists key='playlists' playlists={playlists ?? []} setMode={setMode} />
             )}
             {typeof mode === 'object' && mode.type === 'playlist' && (
               <Playlist key='playlist' playlist={mode.playlist} setMode={setMode} />
             )}
           </AnimatePresence>
+          {isLoading && mode === 'playlists' && (
+            <div className='text-neutral-400 text-center mt-4'>Loading playlists…</div>
+          )}
+          {isError && mode === 'playlists' && (
+            <div className='text-red-400 text-center mt-4'>
+              Couldn&apos;t load playlists. Try signing in again.
+            </div>
+          )}
         </div>
       </main>
     </div>

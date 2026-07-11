@@ -12,7 +12,12 @@ export const COOKIE = {
   returnTo: 'sp_return_to',
 } as const;
 
-export const SCOPES = ['user-read-email', 'user-read-private'].join(' ');
+export const SCOPES = [
+  'user-read-email',
+  'user-read-private',
+  'playlist-read-private',
+  'playlist-read-collaborative',
+].join(' ');
 
 /** OAuth env config, validated once. */
 export function getSpotifyEnv() {
