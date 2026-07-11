@@ -22,8 +22,8 @@ export default function Home() {
   return (
     <div className='flex flex-col flex-1 items-center justify-center'>
       <StarField />
-      <main className='h-full w-full flex items-center justify-center p-4 select-none'>
-        <div className='h-150 w-150'>
+      <main className='h-screen w-full flex items-center justify-center p-4 select-none'>
+        <div className='w-150'>
           <AnimatePresence mode='wait'>
             {mode === 'splash' && <Splash key='splash' setMode={setMode} />}
             {mode === 'signin' && <SignIn key='signin' setMode={setMode} />}
