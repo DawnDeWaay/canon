@@ -16,27 +16,39 @@ const SpotifyIcon = ({ size = 20 }: { size?: number }) => (
 
 const Splash = ({ setMode }: { setMode: (mode: Mode) => void }) => {
   return (
-    <motion.div className='h-full w-full flex flex-col items-center justify-center gap-4'>
+    <motion.div className='h-full flex flex-col items-center justify-center gap-4'>
       <motion.div
         className='font-CircularBold text-4xl font-bold'
         initial={{ opacity: 0 }}
-        animate={{ opacity: 1, transition: { delay: 2, duration: 0.8 } }}
+        animate={{ opacity: 1, transition: { duration: 0.8 } }}
         exit={{ opacity: 0 }}
       >
         Welcome to Canon
       </motion.div>
       <motion.button
         type='button'
-        className='cursor-pointer bg-[#1DB954] text-black px-4 py-2 rounded-xl flex items-center gap-2'
+        className='cursor-pointer bg-[#1DB954] text-black px-4 py-2 rounded-xl flex items-center gap-2 text-center'
         whileHover={{ scale: 1.02 }}
         whileTap={{ scale: 0.98 }}
         initial={{ opacity: 0 }}
-        animate={{ opacity: 1, transition: { delay: 2.3, duration: 0.8 } }}
+        animate={{ opacity: 1, transition: { delay: 0.3, duration: 0.8 } }}
         exit={{ opacity: 0 }}
         onClick={() => setMode('signin')}
       >
         <SpotifyIcon />
         Sign In with Spotify
+      </motion.button>
+      <motion.button
+        type='button'
+        className='cursor-pointer bg-[#1DB954] text-black px-4 py-2 rounded-xl flex items-center gap-2'
+        whileHover={{ scale: 1.02 }}
+        whileTap={{ scale: 0.98 }}
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1, transition: { delay: 0.6, duration: 0.8 } }}
+        exit={{ opacity: 0 }}
+        onClick={() => setMode('playlists')}
+      >
+        Playlists
       </motion.button>
     </motion.div>
   );

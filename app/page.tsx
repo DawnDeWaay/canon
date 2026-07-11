@@ -5,8 +5,9 @@ import { useState } from 'react';
 import SignIn from '@/app/components/SignIn';
 import Splash from '@/app/components/Splash';
 import StarField from './components/StarField';
+import Playlists from './components/Playlists';
 
-export type Mode = 'splash' | 'signin' | 'playlist';
+export type Mode = 'splash' | 'signin' | 'playlists' | 'playlist';
 
 export default function Home() {
   const [mode, setMode] = useState<Mode>('splash');
@@ -19,6 +20,15 @@ export default function Home() {
           <AnimatePresence mode='wait'>
             {mode === 'splash' && <Splash key='splash' setMode={setMode} />}
             {mode === 'signin' && <SignIn key='signin' setMode={setMode} />}
+            {mode === 'playlists' && (
+              <Playlists
+                key='playlists'
+                playlists={[
+                  { title: 'My Playlist', art: '/path/to/art.jpg' },
+                  { title: 'My Playlist', art: '/path/to/art.jpg' },
+                ]}
+              />
+            )}
           </AnimatePresence>
         </div>
       </main>
