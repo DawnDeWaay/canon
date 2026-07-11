@@ -1,6 +1,7 @@
-import { motion } from 'motion/react';
-import type { Mode } from '../page';
 import { CircularProgress } from '@mui/material';
+import { motion } from 'motion/react';
+import { useState } from 'react';
+import type { Mode } from '../page';
 
 const SpotifyIcon = ({ size = 20 }: { size?: number }) => (
   <svg
