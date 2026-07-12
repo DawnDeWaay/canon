@@ -10,7 +10,7 @@ import StarField from './components/StarField';
 import { useMe } from './hooks/useMe';
 import { usePlaylists } from './hooks/usePlaylists';
 
-export type Mode = 'splash' | 'playlists' | { type: 'playlist'; playlist: string };
+export type Mode = 'splash' | 'playlists' | { type: 'playlist'; id: string };
 
 export default function Home() {
   const [mode, setMode] = useState<Mode | null>(null);
@@ -44,7 +44,7 @@ export default function Home() {
                 <Playlists key='playlists' playlists={playlists ?? []} setMode={setMode} />
               )}
               {mode !== null && typeof mode === 'object' && mode.type === 'playlist' && (
-                <Playlist key='playlist' playlist={mode.playlist} setMode={setMode} />
+                <Playlist key='playlist' id={mode.id} setMode={setMode} />
               )}
             </AnimatePresence>
             {isError && mode === 'playlists' && (
