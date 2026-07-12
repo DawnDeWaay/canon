@@ -145,7 +145,8 @@ export async function setTokenCookies(tokens: TokenResponse, existingRefresh?: s
       httpOnly: true,
       secure: isProd,
       sameSite: 'lax',
-      path: '/api/auth',
+      // Must be '/' so it's sent to /api/spotify/* routes that need to refresh.
+      path: '/',
       // Refresh tokens don't expire on Spotify — persist ~30 days rolling.
       maxAge: 60 * 60 * 24 * 30,
     });
@@ -155,7 +156,7 @@ export async function setTokenCookies(tokens: TokenResponse, existingRefresh?: s
 export async function clearAuthCookies() {
   const jar = await cookies();
   for (const name of [COOKIE.access, COOKIE.refresh, COOKIE.expiresAt]) {
-    jar.set(name, '', { path: name === COOKIE.refresh ? '/api/auth' : '/', maxAge: 0 });
+    jar.set(name, '', { path: '/', maxAge: 0 });
   }
 }
 
