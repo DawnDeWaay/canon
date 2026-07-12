@@ -18,7 +18,7 @@ const Nameplate = ({ name, image }: { name: string; image: string }) => {
     <motion.div className='fixed right-4 top-4' initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
       <div className='w-full flex justify-center items-center'>
         <motion.div
-          className='p-1 flex flex-row gap-2 rounded-xl rounded-l-full items-center'
+          className='p-1 flex flex-row gap-2 rounded-r-xl rounded-l-full items-center'
           initial={false}
           animate={{ backgroundColor: '#121212' }}
         >
@@ -30,7 +30,7 @@ const Nameplate = ({ name, image }: { name: string; image: string }) => {
             type='button'
             onClick={handleLogOut}
             disabled={loggingOut}
-            className='text-white font-CircularBold text-md bg-red-500 px-2 py-1 rounded-sm text-md cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed'
+            className='text-white font-CircularBold text-md bg-red-500 px-2 py-1 rounded-lg text-md cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed'
             initial={false}
             animate={{ padding: '0.25rem 0.5rem' }}
             whileHover={{ padding: '0.35rem 0.5rem' }}

@@ -36,8 +36,8 @@ export default function Home() {
       )}
       <div className='flex flex-col flex-1 items-center justify-center'>
         <StarField />
-        <main className='h-screen w-full flex items-center justify-center p-4 select-none'>
-          <div className='w-150 my-12'>
+        <main className='min-h-screen w-full flex items-start justify-center px-4 pt-32 pb-12 select-none'>
+          <div className='w-150'>
             <AnimatePresence mode='wait'>
               {mode === 'splash' && <Splash key='splash' setMode={setMode} />}
               {mode === 'playlists' && (
