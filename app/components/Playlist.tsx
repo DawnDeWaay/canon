@@ -3,9 +3,9 @@ import { ArrowBack, ArrowDownward, ArrowForward, ArrowUpward } from '@mui/icons-
 import { getColor } from 'colorthief';
 import { motion } from 'motion/react';
 import { useEffect, useState } from 'react';
+import { useColor } from '../context/ColorContext';
 import { usePlaylist } from '../hooks/usePlaylist';
 import type { Mode } from '../page';
-import { useColor } from '../context/ColorContext';
 import SongCard from './SongCard';
 
 type Direction = 'left' | 'down' | 'up' | 'right';
@@ -25,7 +25,7 @@ const KEY_TO_DIRECTION: Record<string, Direction> = {
   D: 'right',
 };
 
-const Playlist = ({ id, setMode }: { id: string; setMode: (mode: Mode) => void }) => {
+const Playlist = ({ id }: { id: string }) => {
   const [pressed, setPressed] = useState<Set<Direction>>(new Set());
   const [topIndex, setTopIndex] = useState(0);
 

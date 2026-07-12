@@ -2,20 +2,16 @@
 'use client';
 
 import { memo, type ReactNode, useEffect, useState } from 'react';
+import { useColor } from '../context/ColorContext';
 import Star from './Star';
 
 type StarFieldProps = {
   size?: number;
   gap?: number;
   isRandom?: boolean;
-  color?: string;
-  /** Width of the empty rectangle in the middle (px). Stars overlapping it are removed. */
   holeWidth?: number;
-  /** Height of the empty rectangle in the middle (px). */
   holeHeight?: number;
-  /** Extra padding around the hole so stars don't touch the UI box (px). */
   holePadding?: number;
-  /** Optional UI content rendered centered in the hole. */
   children?: ReactNode;
 };
 
@@ -23,13 +19,13 @@ const StarField = ({
   size = 64,
   gap = 0,
   isRandom = true,
-  color,
   holeWidth = 600,
   holeHeight = 2000,
   holePadding = 0,
   children,
 }: StarFieldProps) => {
   const [viewport, setViewport] = useState<{ w: number; h: number }>({ w: 0, h: 0 });
+  const { color } = useColor();
 
   useEffect(() => {
     const update = () => {
