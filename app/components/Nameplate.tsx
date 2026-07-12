@@ -15,7 +15,11 @@ const Nameplate = ({ name, image }: { name: string; image: string }) => {
   };
 
   return (
-    <motion.div className='fixed right-4 top-4' initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+    <motion.div
+      className='fixed right-4 top-4 z-50'
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+    >
       <div className='w-full flex justify-center items-center'>
         <motion.div
           className='p-1 flex flex-row gap-2 rounded-r-xl rounded-l-full items-center'
