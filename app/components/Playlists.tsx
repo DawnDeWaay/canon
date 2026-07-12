@@ -18,7 +18,7 @@ const Playlists = ({
         animate={{ opacity: 1, transition: { duration: 0.8 } }}
         exit={{ opacity: 0 }}
       >
-        Select a Playlist
+        Pick a Playlist
       </motion.div>
       <div className='flex flex-col gap-1 w-full rounded-2xl overflow-hidden'>
         {playlists?.map((playlist, index) => (
