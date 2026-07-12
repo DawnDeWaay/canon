@@ -3,6 +3,7 @@
 import { AnimatePresence } from 'motion/react';
 import { useEffect, useState } from 'react';
 import Splash from '@/app/components/Splash';
+import Nameplate from './components/Nameplate';
 import Playlist from './components/Playlist';
 import Playlists from './components/Playlists';
 import StarField from './components/StarField';
@@ -14,8 +15,6 @@ export type Mode = 'splash' | 'playlists' | { type: 'playlist'; playlist: string
 export default function Home() {
   const [mode, setMode] = useState<Mode | null>(null);
 
-  // Check auth on load so we can send logged-in users straight to Playlists
-  // (and avoid flashing the splash to them).
   const { data: user, isPending: authPending } = useMe();
 
   useEffect(() => {
@@ -23,35 +22,37 @@ export default function Home() {
     setMode(user ? 'playlists' : 'splash');
   }, [authPending, user, mode]);
 
-  // Only query once the user has advanced past sign-in.
   const shouldFetch =
     mode === 'playlists' || (mode !== null && typeof mode === 'object' && mode.type === 'playlist');
   const { data: playlists, isLoading, isError } = usePlaylists(shouldFetch);
 
   return (
-    <div className='flex flex-col flex-1 items-center justify-center'>
-      <StarField />
-      <main className='h-screen w-full flex items-center justify-center p-4 select-none'>
-        <div className='w-150 my-12'>
-          <AnimatePresence mode='wait'>
-            {mode === 'splash' && <Splash key='splash' setMode={setMode} />}
-            {mode === 'playlists' && (
-              <Playlists key='playlists' playlists={playlists ?? []} setMode={setMode} />
+    <>
+      {user && <Nameplate name={user?.display_name ?? ''} image={user?.images?.[0]?.url ?? ''} />}
+      <div className='flex flex-col flex-1 items-center justify-center'>
+        <StarField />
+        <main className='h-screen w-full flex items-center justify-center p-4 select-none'>
+          <div className='w-150 my-12'>
+            <AnimatePresence mode='wait'>
+              {mode === 'splash' && <Splash key='splash' setMode={setMode} />}
+              {mode === 'playlists' && (
+                <Playlists key='playlists' playlists={playlists ?? []} setMode={setMode} />
+              )}
+              {mode !== null && typeof mode === 'object' && mode.type === 'playlist' && (
+                <Playlist key='playlist' playlist={mode.playlist} setMode={setMode} />
+              )}
+            </AnimatePresence>
+            {isLoading && mode === 'playlists' && (
+              <div className='text-neutral-400 text-center mt-4'>Loading playlists…</div>
             )}
-            {mode !== null && typeof mode === 'object' && mode.type === 'playlist' && (
-              <Playlist key='playlist' playlist={mode.playlist} setMode={setMode} />
+            {isError && mode === 'playlists' && (
+              <div className='text-red-400 text-center mt-4'>
+                Couldn&apos;t load playlists. Try signing in again.
+              </div>
             )}
-          </AnimatePresence>
-          {isLoading && mode === 'playlists' && (
-            <div className='text-neutral-400 text-center mt-4'>Loading playlists…</div>
-          )}
-          {isError && mode === 'playlists' && (
-            <div className='text-red-400 text-center mt-4'>
-              Couldn&apos;t load playlists. Try signing in again.
-            </div>
-          )}
-        </div>
-      </main>
-    </div>
+          </div>
+        </main>
+      </div>
+    </>
   );
 }
