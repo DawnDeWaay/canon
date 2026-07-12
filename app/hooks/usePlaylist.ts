@@ -14,6 +14,7 @@ async function fetchPlaylist(id: string): Promise<PlaylistDetail> {
     throw new Error(`Failed to load playlist: ${res.status}`);
   }
   const data = (await res.json()) as { playlist: PlaylistDetail };
+  console.log(data);
   return data.playlist;
 }
 
