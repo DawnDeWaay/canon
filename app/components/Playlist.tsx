@@ -1,9 +1,11 @@
 /** biome-ignore-all lint/suspicious/noArrayIndexKey: <dont wanna> */
 import { ArrowBack, ArrowDownward, ArrowForward, ArrowUpward } from '@mui/icons-material';
+import { getColor } from 'colorthief';
 import { motion } from 'motion/react';
 import { useEffect, useState } from 'react';
 import { usePlaylist } from '../hooks/usePlaylist';
 import type { Mode } from '../page';
+import { useColor } from '../context/ColorContext';
 import SongCard from './SongCard';
 
 type Direction = 'left' | 'down' | 'up' | 'right';
@@ -25,8 +27,41 @@ const KEY_TO_DIRECTION: Record<string, Direction> = {
 
 const Playlist = ({ id, setMode }: { id: string; setMode: (mode: Mode) => void }) => {
   const [pressed, setPressed] = useState<Set<Direction>>(new Set());
+  const [topIndex, setTopIndex] = useState(0);
 
+  const { setColor } = useColor();
   const { data: playlist } = usePlaylist(id);
+
+  useEffect(() => {
+    if (pressed.has('left')) {
+      setTopIndex((prev) => Math.min(prev + 1, (playlist?.tracks.length ?? 0) - 1));
+    }
+    if (pressed.has('right')) {
+      setTopIndex((prev) => Math.max(prev - 1, 0));
+    }
+  }, [pressed, playlist?.tracks.length]);
+
+  // Extract the dominant color from the current top track's album art.
+  const albumArt = playlist?.tracks[topIndex]?.albumArt;
+  useEffect(() => {
+    if (!albumArt) return;
+    let cancelled = false;
+    const img = new Image();
+    img.crossOrigin = 'anonymous';
+    img.src = albumArt;
+    img.onload = async () => {
+      try {
+        const color = await getColor(img);
+        if (cancelled || !color) return;
+        setColor(color.hex());
+      } catch {
+        setColor('#1DB954');
+      }
+    };
+    return () => {
+      cancelled = true;
+    };
+  }, [albumArt, setColor]);
 
   useEffect(() => {
     const handleDown = (e: KeyboardEvent) => {
@@ -77,8 +112,10 @@ const Playlist = ({ id, setMode }: { id: string; setMode: (mode: Mode) => void }
       <div className='relative h-96 w-full my-6'>
         {playlist?.tracks.map((track, index) => {
           const visibleDepth = 3;
-          const clamped = Math.min(index, visibleDepth);
-          const isBuried = index > visibleDepth;
+          const offset = index - topIndex;
+          const clamped = Math.min(Math.max(offset, 0), visibleDepth);
+          const isBuried = offset > visibleDepth;
+          const isPast = offset < 0;
           return (
             <motion.div
               key={track.id ?? index}
@@ -88,7 +125,7 @@ const Playlist = ({ id, setMode }: { id: string; setMode: (mode: Mode) => void }
               animate={{
                 y: clamped * 12,
                 scale: 1 - clamped * 0.04,
-                opacity: isBuried ? 0 : 1 - clamped * 0.15,
+                opacity: isBuried || isPast ? 0 : 1 - clamped * 0.15,
               }}
               transition={{ type: 'spring', stiffness: 300, damping: 30 }}
             >

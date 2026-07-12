@@ -45,7 +45,6 @@ const StarField = ({
   const rows = viewport.h ? Math.ceil(viewport.h / cell) : 0;
   const total = cols * rows;
 
-  // Hole rect in viewport pixel coords (centered), expanded by padding.
   const hasHole = holeWidth > 0 && holeHeight > 0;
   const halfW = holeWidth / 2 + holePadding;
   const halfH = holeHeight / 2 + holePadding;
