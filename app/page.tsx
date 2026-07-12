@@ -24,7 +24,7 @@ export default function Home() {
 
   const shouldFetch =
     mode === 'playlists' || (mode !== null && typeof mode === 'object' && mode.type === 'playlist');
-  const { data: playlists, isLoading, isError } = usePlaylists(shouldFetch);
+  const { data: playlists, isError } = usePlaylists(shouldFetch);
 
   return (
     <>
