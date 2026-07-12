@@ -25,7 +25,7 @@ const PlaylistCard = ({
         <div className='relative aspect-square h-full ml-2 rounded-md overflow-hidden bg-neutral-800'>
           {art ? <Image src={art} alt={title} fill sizes='64px' className='object-cover' /> : null}
         </div>
-        <div className='text-white font-CircularBold text-md w-full text-start'>{title}</div>
+        <div className='text-white font-CircularBold text-lg w-full text-start'>{title}</div>
       </div>
     </motion.div>
   );
