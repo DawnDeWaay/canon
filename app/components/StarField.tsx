@@ -59,7 +59,7 @@ const StarField = ({
     <>
       <div
         aria-hidden
-        className='fixed inset-0 -z-10 overflow-hidden'
+        className='fixed inset-0 overflow-hidden pointer-events-none'
         style={{
           display: 'grid',
           gridTemplateColumns: `repeat(${cols}, ${size}px)`,
@@ -93,7 +93,7 @@ const StarField = ({
           }
 
           return (
-            <div style={{ transform: 'translateX(-40%)' }} key={i}>
+            <div style={{ transform: 'translateX(-40%)', pointerEvents: 'auto' }} key={i}>
               <Star size={size} isRandom={isRandom} color={color} index={row} />
             </div>
           );
