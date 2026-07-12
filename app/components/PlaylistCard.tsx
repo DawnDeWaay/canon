@@ -19,6 +19,7 @@ const PlaylistCard = ({
       initial={false}
       animate={{ height: '3.5rem', opacity: 0.9, backgroundColor: '#121212' }}
       whileHover={{ height: '4rem' }}
+      whileTap={{ height: '100%' }}
       onClick={() => setMode({ type: 'playlist', id: id })}
     >
       <div className='flex flex-row items-center justify-between w-full p-1 gap-2'>
