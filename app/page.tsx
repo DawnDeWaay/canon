@@ -28,7 +28,12 @@ export default function Home() {
 
   return (
     <>
-      {user && <Nameplate name={user?.display_name ?? ''} image={user?.images?.[0]?.url ?? ''} />}
+      {user && (
+        <Nameplate
+          name={user?.display_name ?? ''}
+          image={user?.images?.[user?.images.length - 1]?.url ?? ''}
+        />
+      )}
       <div className='flex flex-col flex-1 items-center justify-center'>
         <StarField />
         <main className='h-screen w-full flex items-center justify-center p-4 select-none'>

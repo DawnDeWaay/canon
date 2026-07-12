@@ -6,7 +6,7 @@ const Nameplate = ({ name, image }: { name: string; image: string }) => {
     <motion.div className='fixed right-4 top-4' initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
       <div className='w-full flex justify-center items-center'>
         <motion.div
-          className='p-1 flex flex-row gap-1 rounded-xl'
+          className='p-1 flex flex-row gap-2 rounded-xl rounded-l-full items-center'
           initial={false}
           animate={{ backgroundColor: '#121212' }}
         >
