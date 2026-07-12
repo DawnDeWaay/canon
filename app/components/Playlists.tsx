@@ -13,7 +13,7 @@ const Playlists = ({
   return (
     <motion.div className='w-full flex flex-col items-start justify-center gap-4 text-center'>
       <motion.div
-        className='font-CircularBold text-3xl font-bold w-full text-center'
+        className='font-CircularBold text-4xl font-bold w-full text-center'
         initial={{ opacity: 0 }}
         animate={{ opacity: 1, transition: { duration: 0.8 } }}
         exit={{ opacity: 0 }}
