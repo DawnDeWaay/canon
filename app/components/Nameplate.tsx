@@ -33,7 +33,7 @@ const Nameplate = ({ name, image }: { name: string; image: string }) => {
             className='text-white font-CircularBold text-md bg-red-500 px-2 py-1 rounded-lg text-md cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed'
             initial={false}
             animate={{ padding: '0.25rem 0.5rem' }}
-            whileHover={{ padding: '0.35rem 0.5rem' }}
+            whileHover={{ padding: '0.25rem 0.6rem' }}
           >
             {loggingOut ? 'Logging out…' : 'Log Out'}
           </motion.button>
