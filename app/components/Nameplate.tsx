@@ -39,7 +39,7 @@ const Nameplate = ({ name, image }: { name: string; image: string }) => {
             animate={{ padding: '0.25rem 0.5rem' }}
             whileHover={{ padding: '0.25rem 0.6rem' }}
           >
-            {loggingOut ? 'Logging out…' : 'Log Out'}
+            Log Out
           </motion.button>
         </motion.div>
       </div>
