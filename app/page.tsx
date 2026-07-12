@@ -47,9 +47,6 @@ export default function Home() {
                 <Playlist key='playlist' playlist={mode.playlist} setMode={setMode} />
               )}
             </AnimatePresence>
-            {isLoading && mode === 'playlists' && (
-              <div className='text-neutral-400 text-center mt-4'>Loading playlists…</div>
-            )}
             {isError && mode === 'playlists' && (
               <div className='text-red-400 text-center mt-4'>
                 Couldn&apos;t load playlists. Try signing in again.

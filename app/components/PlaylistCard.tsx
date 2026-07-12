@@ -15,7 +15,7 @@ const PlaylistCard = ({
 }) => {
   return (
     <motion.div
-      className='h-14 w-full rounded-md flex items-center justify-center cursor-pointer'
+      className='h-14 w-full rounded-lg flex items-center justify-center cursor-pointer'
       initial={false}
       animate={{ height: '3.5rem', opacity: 0.9, backgroundColor: '#121212' }}
       whileHover={{ height: '4rem' }}
