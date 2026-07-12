@@ -8,8 +8,10 @@ const SongCard = ({ name, art }: { name: string; art: string }) => {
       initial={false}
       animate={{ backgroundColor: '#121212' }}
     >
-      <div className='rounded-xl aspect-square overflow-hidden'>
-        <Image src={art} alt={name ?? ''} fill className='object-cover' />
+      <div className='relative w-64 aspect-square rounded-xl overflow-hidden'>
+        {art ? (
+          <Image src={art} alt={name ?? ''} fill sizes='256px' className='object-cover' />
+        ) : null}
       </div>
       <div className='text-white font-CircularBold text-lg mt-4'>{name}</div>
     </motion.div>
