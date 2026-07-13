@@ -33,7 +33,7 @@ const Nameplate = ({ name, image }: { name: string; image: string }) => {
     >
       <div className='w-full flex justify-center items-center'>
         <motion.div
-          className='p-1 flex flex-row gap-2 rounded-l-full rounded-r-lg items-center overflow-hidden'
+          className='p-1 flex flex-row gap-2 rounded-l-full rounded-r-lg items-center justify-center overflow-hidden'
           initial={false}
           animate={{ backgroundColor: '#121212' }}
         >
