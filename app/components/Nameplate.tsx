@@ -1,3 +1,4 @@
+/** biome-ignore-all lint/suspicious/noDocumentCookie: <explanation> */
 import { motion } from 'motion/react';
 import Image from 'next/image';
 import { useState } from 'react';
@@ -15,18 +16,12 @@ const Nameplate = ({ name, image }: { name: string; image: string }) => {
         cache: 'no-store',
       });
     } catch {}
-    // Belt-and-suspenders: also nuke any client-readable cookies from JS.
-    // httpOnly cookies (access/refresh tokens) can only be cleared by the
-    // server response above, but this handles the readable `sp_expires_at`
-    // hint cookie in case anything relies on it.
     const clientCookieNames = ['sp_expires_at'];
     for (const name of clientCookieNames) {
       for (const path of ['/', '/api/auth']) {
         document.cookie = `${name}=; Path=${path}; Max-Age=0; Expires=Thu, 01 Jan 1970 00:00:00 GMT; SameSite=Lax`;
       }
     }
-    // Force a full navigation + reload so no cached React state or HTTP
-    // responses keep the previous session visible.
     window.location.replace('/');
   };
 
