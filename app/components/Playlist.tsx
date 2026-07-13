@@ -201,8 +201,8 @@ const Playlist = ({ id, setMode }: { id: string; setMode: (mode: Mode) => void }
             })}
           </div>
         ) : (
-          <div className='w-full h-104 flex items-center justify-center'>
-            <CircularProgress size='large' />
+          <div className='w-full h-104 flex items-center justify-center text-white'>
+            <CircularProgress size='large' color='inherit' />
           </div>
         )}
       </div>
