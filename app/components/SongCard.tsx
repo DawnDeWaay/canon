@@ -4,11 +4,11 @@ import Image from 'next/image';
 const SongCard = ({ name, art, artist }: { name: string; art: string; artist: string[] }) => {
   return (
     <motion.div
-      className='h-96 w-fit p-4 rounded-3xl flex flex-col items-center justify-start'
+      className='h-104 w-fit p-4 rounded-3xl flex flex-col items-center justify-start'
       initial={false}
       animate={{ backgroundColor: '#121212' }}
     >
-      <div className='relative w-80 aspect-square rounded-xl overflow-hidden'>
+      <div className='relative w-80 aspect-square shrink-0 rounded-xl overflow-hidden'>
         {art ? <Image src={art} alt={name ?? ''} fill className='object-cover' /> : null}
       </div>
       <div className='flex flex-col items-start justify-start w-full mb-2'>
