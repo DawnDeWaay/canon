@@ -214,6 +214,7 @@ const Playlist = ({ id, setMode }: { id: string; setMode: (mode: Mode) => void }
           ← Back
         </div>
       </div>
+      {/* biome-ignore lint/a11y/useMediaCaption: 30s preview has no captions */}
       <audio ref={audioRef} preload='auto' />
     </motion.div>
   );
