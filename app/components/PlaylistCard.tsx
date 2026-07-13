@@ -23,9 +23,7 @@ const PlaylistCard = ({
     >
       <motion.div className='flex flex-row items-center justify-between w-full h-full gap-4 px-3'>
         <div className='h-12 w-12 relative rounded-md overflow-hidden'>
-          {art ? (
-            <Image src={art} alt={title} height={48} width={48} className='object-cover' />
-          ) : null}
+          {art ? <Image src={art} alt={title} fill className='object-cover' /> : null}
         </div>
         <div className='text-white font-CircularBold text-lg w-full text-start'>{title}</div>
       </motion.div>
