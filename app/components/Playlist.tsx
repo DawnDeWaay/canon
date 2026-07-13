@@ -1,7 +1,13 @@
 /** biome-ignore-all lint/suspicious/noArrayIndexKey: <dont wanna> */
 /** biome-ignore-all lint/a11y/noStaticElementInteractions: <explanation> */
 /** biome-ignore-all lint/a11y/useKeyWithClickEvents: <explanation> */
-import { ArrowBack, ArrowDownward, ArrowForward, ArrowUpward } from '@mui/icons-material';
+import {
+  ArrowBack,
+  ArrowDownward,
+  ArrowForward,
+  ArrowUpward,
+  PlayArrow,
+} from '@mui/icons-material';
 import { getColor } from 'colorthief';
 import { motion } from 'motion/react';
 import { useEffect, useRef, useState } from 'react';
@@ -33,7 +39,7 @@ const Playlist = ({ id, setMode }: { id: string; setMode: (mode: Mode) => void }
   const [topIndex, setTopIndex] = useState(0);
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
-  const { setColor } = useColor();
+  const { setColor, color } = useColor();
   const { data: playlist } = usePlaylist(id);
 
   useEffect(() => {
@@ -202,6 +208,31 @@ const Playlist = ({ id, setMode }: { id: string; setMode: (mode: Mode) => void }
             </motion.span>
           </motion.div>
         </div>
+      </div>
+      <div className='flex flex-row justify-center items-start'>
+        <motion.div
+          className='p-1 flex flex-row gap-1 rounded-xl'
+          initial={false}
+          animate={{ opacity: 0.9, backgroundColor: '#121212' }}
+        >
+          Keep
+          <ArrowBack color='inherit' />
+        </motion.div>
+        <motion.div
+          className='h-64 w-64 rounded-3xl p-6 flex items-center justify-center'
+          initial={false}
+          animate={{ backgroundColor: color }}
+        >
+          <PlayArrow />
+        </motion.div>
+        <motion.div
+          className='p-1 flex flex-row gap-1 rounded-xl'
+          initial={false}
+          animate={{ opacity: 0.9, backgroundColor: '#121212' }}
+        >
+          <ArrowForward color='inherit' />
+          Discard
+        </motion.div>
       </div>
       <div className='w-full flex justify-center items-center mt-2'>
         <div
