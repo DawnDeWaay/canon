@@ -22,7 +22,7 @@ const PlaylistCard = ({
       onClick={() => setMode({ type: 'playlist', id })}
     >
       <motion.div className='flex flex-row items-center justify-between w-full h-full gap-4 px-3'>
-        <div className='h-12 w-12 relative rounded-md overflow-hidden'>
+        <div className='h-12 w-12 shrink-0 relative rounded-md overflow-hidden'>
           {art ? <Image src={art} alt={title} fill className='object-cover' /> : null}
         </div>
         <div className='text-white font-CircularBold text-lg w-full text-start'>{title}</div>
