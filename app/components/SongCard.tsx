@@ -5,8 +5,8 @@ const SongCard = ({ name, art, artist }: { name: string; art: string; artist: st
   return (
     <motion.div
       className='h-104 w-fit p-4 rounded-3xl flex flex-col items-center justify-start'
-      initial={false}
-      animate={{ backgroundColor: '#121212' }}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1, backgroundColor: '#121212' }}
     >
       <div className='relative w-80 aspect-square rounded-xl overflow-hidden'>
         {art ? <Image src={art} alt={name ?? ''} fill className='object-cover' /> : null}

@@ -108,14 +108,16 @@ const Playlist = ({ id, setMode }: { id: string; setMode: (mode: Mode) => void }
       exit={{ opacity: 0 }}
       className='w-full flex flex-col items-center justify-center'
     >
-      <motion.div
-        className='font-CircularBold text-3xl font-bold w-full text-center'
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1, transition: { duration: 0.8 } }}
-        exit={{ opacity: 0 }}
-      >
-        {playlist?.title}
-      </motion.div>
+      {playlist?.title && (
+        <motion.div
+          className='font-CircularBold text-3xl font-bold w-full text-center'
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+        >
+          {playlist?.title}
+        </motion.div>
+      )}
       <div className='w-full flex items-center justify-center'>
         <div className='relative w-[22rem] flex items-center justify-center h-104 my-6'>
           {playlist?.tracks.map((track, index) => {
