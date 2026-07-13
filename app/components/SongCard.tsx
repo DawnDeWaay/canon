@@ -11,7 +11,7 @@ const SongCard = ({ name, art }: { name: string; art: string }) => {
       <div className='relative w-80 aspect-square rounded-xl overflow-hidden'>
         {art ? <Image src={art} alt={name ?? ''} fill className='object-cover' /> : null}
       </div>
-      <div className='text-white font-CircularBold text-lg mt-4'>{name}</div>
+      <div className='text-white font-CircularBold text-lg mt-4 w-full text-start'>{name}</div>
     </motion.div>
   );
 };
