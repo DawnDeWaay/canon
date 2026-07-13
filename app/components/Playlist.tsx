@@ -6,6 +6,7 @@ import {
   ArrowDownward,
   ArrowForward,
   ArrowUpward,
+  DoneAll,
   Pause,
   PlayArrow,
 } from '@mui/icons-material';
@@ -251,7 +252,22 @@ const Playlist = ({ id, setMode }: { id: string; setMode: (mode: Mode) => void }
           ← Back
         </div>
       </div>
-      <div className='w-full p-2 fixed bottom-0 left-0 flex items-center justify-center'>
+      <div className='w-full p-2 fixed bottom-0 left-0 flex flex-col items-center justify-center gap-1'>
+        <motion.button
+          type='button'
+          className='cursor-pointer text-white px-4 py-2 rounded-xl flex items-center gap-2 text-center'
+          whileTap={{ scale: 0.98 }}
+          initial={false}
+          animate={{
+            backgroundColor: color,
+            opacity: 1,
+            transition: { delay: 0.3, duration: 0.8 },
+          }}
+          exit={{ opacity: 0 }}
+        >
+          Finish
+          <DoneAll color='inherit' />
+        </motion.button>
         <div className='w-full flex justify-center items-center'>
           <motion.div
             className='p-1 flex flex-row gap-1 rounded-xl'

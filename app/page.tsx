@@ -10,7 +10,11 @@ import StarField from './components/StarField';
 import { useMe } from './hooks/useMe';
 import { usePlaylists } from './hooks/usePlaylists';
 
-export type Mode = 'splash' | 'playlists' | { type: 'playlist'; id: string };
+export type Mode =
+  | 'splash'
+  | 'playlists'
+  | { type: 'playlist'; id: string }
+  | { type: 'summary'; tracks: string[] };
 
 export default function Home() {
   const [mode, setMode] = useState<Mode | null>(null);
