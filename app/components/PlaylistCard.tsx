@@ -18,14 +18,14 @@ const PlaylistCard = ({
       className='h-14 w-full rounded-lg flex items-center justify-center cursor-pointer'
       initial={false}
       animate={{ opacity: 0.9, backgroundColor: '#121212' }}
-      onClick={() => setMode({ type: 'playlist', id: id })}
+      onClick={() => setMode({ type: 'playlist', id })}
     >
       <motion.div
         className='flex flex-row items-center justify-between w-full h-full gap-4 px-3'
         animate={{ height: '4rem' }}
         whileHover={{ height: '4.5rem' }}
       >
-        <div className='relative rounded-md overflow-hidden bg-neutral-800'>
+        <div className='h-3 w-3 relative rounded-md overflow-hidden bg-neutral-800'>
           {art ? (
             <Image src={art} alt={title} height={48} width={48} className='object-cover' />
           ) : null}
