@@ -44,7 +44,7 @@ export default function Home() {
                 <Playlists key='playlists' playlists={playlists ?? []} setMode={setMode} />
               )}
               {mode !== null && typeof mode === 'object' && mode.type === 'playlist' && (
-                <Playlist key='playlist' id={mode.id} />
+                <Playlist key='playlist' id={mode.id} setMode={setMode} />
               )}
             </AnimatePresence>
             {isError && mode === 'playlists' && (

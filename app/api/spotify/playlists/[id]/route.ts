@@ -111,13 +111,17 @@ export async function GET(_req: Request, ctx: { params: Promise<{ id: string }> 
     const head = (await headRes.json()) as SpotifyPlaylistFull;
 
     // Some playlists (editorial, restricted, or malformed responses) come back
-    // without an embedded `tracks` page. Fall back to an empty page so we can
-    // still return the playlist header instead of 500'ing.
+    // without an embedded `tracks` page. Fall back to the dedicated tracks
+    // endpoint so we still return real tracks instead of an empty list.
     const headTracks = head.tracks;
     const items: SpotifyPlaylistItem[] = Array.isArray(headTracks?.items)
       ? [...headTracks.items]
       : [];
-    let nextUrl: string | null = headTracks?.next ?? null;
+    let nextUrl: string | null =
+      headTracks?.next ??
+      (items.length === 0
+        ? `${API_PREFIX}/playlists/${encodeURIComponent(id)}/tracks?limit=100`
+        : null);
 
     // 2. Follow `next` until we've drained every track page.
     while (nextUrl) {
