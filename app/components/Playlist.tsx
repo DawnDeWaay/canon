@@ -236,9 +236,11 @@ const Playlist = ({ id, setMode }: { id: string; setMode: (mode: Mode) => void }
                   style={{ zIndex: playlist.tracks.length - index }}
                   initial={false}
                   animate={{
+                    x: isPast ? -600 : 0,
                     y: clamped * 12,
+                    rotate: isPast ? -15 : 0,
                     scale: 1 - clamped * 0.04,
-                    opacity: isBuried || isPast ? 0 : 1 - clamped * 0.15,
+                    opacity: isBuried ? 0 : isPast ? 1 : 1 - clamped * 0.15,
                   }}
                   transition={{ type: 'spring', stiffness: 300, damping: 30 }}
                 >

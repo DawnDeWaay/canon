@@ -16,11 +16,15 @@ const SongCard = ({
   return (
     <motion.div
       className='h-104 w-fit p-4 rounded-3xl flex flex-col items-center justify-start relative overflow-hidden'
-      initial={{ opacity: 0, scale: 1 }}
-      animate={{ opacity: 1, scale: [1, 1.1, 1], backgroundColor: '#121212' }}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1, backgroundColor: '#121212' }}
     >
       {removed && (
-        <motion.div className='absolute top-4 right-4 rotate-18 text-red-500 text-3xl'>
+        <motion.div
+          className='absolute top-4 right-4 rotate-23 text-red-500 text-3xl'
+          initial={false}
+          animate={{ scale: [1, 0.9, 1] }}
+        >
           <Cancel fontSize='inherit' />
         </motion.div>
       )}
