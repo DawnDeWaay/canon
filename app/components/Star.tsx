@@ -7,6 +7,7 @@ import { useColor } from '../context/ColorContext';
 const FLIP_DURATION = 1.6; // seconds
 const HOVER_DURATION = 0.2; // seconds
 const COLOR_DURATION = 0.6; // seconds
+const COLOR_MAX_DELAY = 0.6; // seconds
 const MIN_INTERVAL_MS = 10_000;
 const MAX_INTERVAL_MS = 60_000;
 
@@ -40,7 +41,11 @@ const Star = ({
     if (isHoveringRef.current) return;
     controls.start({
       fill: resolvedColor,
-      transition: { duration: COLOR_DURATION, ease: 'easeInOut' },
+      transition: {
+        duration: COLOR_DURATION,
+        ease: 'easeInOut',
+        delay: Math.random() * COLOR_MAX_DELAY,
+      },
     });
   }, [chance, controls, resolvedColor]);
 
