@@ -69,14 +69,16 @@ const API_PREFIX = 'https://api.spotify.com/v1';
 function normalizeTrack(item: SpotifyPlaylistItem): PlaylistTrack | null {
   if (!item.track) return null; // Podcasts / removed tracks come back as null.
   const t = item.track;
+  // Local files and some odd items can have null artists/album/duration.
+  // Guard every field so one bad track doesn't 500 the whole playlist.
   return {
-    id: t.id,
-    name: t.name,
-    artists: t.artists.map((a) => a.name),
+    id: t.id ?? '',
+    name: t.name ?? '',
+    artists: Array.isArray(t.artists) ? t.artists.map((a) => a?.name ?? '') : [],
     album: t.album?.name ?? '',
     albumArt: t.album?.images?.[0]?.url ?? '',
-    durationMs: t.duration_ms,
-    uri: t.uri,
+    durationMs: typeof t.duration_ms === 'number' ? t.duration_ms : 0,
+    uri: t.uri ?? '',
     addedAt: item.added_at,
     isLocal: item.is_local ?? false,
   };
@@ -132,12 +134,29 @@ export async function GET(_req: Request, ctx: { params: Promise<{ id: string }> 
       art: head.images?.[0]?.url ?? '',
       owner: head.owner?.display_name ?? head.owner?.id ?? '',
       followers: head.followers?.total ?? 0,
-      tracks: items.map(normalizeTrack).filter((t): t is PlaylistTrack => t !== null),
+      tracks: items
+        .map((item) => {
+          try {
+            return normalizeTrack(item);
+          } catch (e) {
+            console.error('normalizeTrack failed', e, item);
+            return null;
+          }
+        })
+        .filter((t): t is PlaylistTrack => t !== null),
     };
 
     return NextResponse.json({ playlist });
   } catch (err) {
     console.error('playlist route error', err);
-    return NextResponse.json({ error: 'server_error' }, { status: 500 });
+    const message = err instanceof Error ? `${err.name}: ${err.message}` : String(err);
+    // spotifyFetch throws 'Not authenticated' when there's no valid token —
+    // surface that as 401 so the client can redirect to login instead of
+    // treating it as a generic server failure.
+    if (message.includes('Not authenticated')) {
+      return NextResponse.json({ error: 'unauthorized' }, { status: 401 });
+    }
+    const stack = err instanceof Error ? err.stack : undefined;
+    return NextResponse.json({ error: 'server_error', message, stack }, { status: 500 });
   }
 }

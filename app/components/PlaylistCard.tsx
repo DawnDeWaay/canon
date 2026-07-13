@@ -21,7 +21,7 @@ const PlaylistCard = ({
       whileHover={{ height: '4rem' }}
       onClick={() => setMode({ type: 'playlist', id: id })}
     >
-      <div className='flex flex-row items-center justify-between w-full p-1 gap-2'>
+      <div className='flex flex-row items-center justify-between w-full h-full p-1 gap-2'>
         <div className='relative aspect-square h-full ml-2 rounded-md overflow-hidden bg-neutral-800'>
           {art ? <Image src={art} alt={title} fill sizes='64px' className='object-cover' /> : null}
         </div>
