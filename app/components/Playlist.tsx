@@ -6,6 +6,7 @@ import {
   ArrowDownward,
   ArrowForward,
   ArrowUpward,
+  Pause,
   PlayArrow,
 } from '@mui/icons-material';
 import { getColor } from 'colorthief';
@@ -37,6 +38,7 @@ const KEY_TO_DIRECTION: Record<string, Direction> = {
 const Playlist = ({ id, setMode }: { id: string; setMode: (mode: Mode) => void }) => {
   const [pressed, setPressed] = useState<Set<Direction>>(new Set());
   const [topIndex, setTopIndex] = useState(0);
+  const [musicPlaying, setMusicPlaying] = useState(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
   const { setColor, color } = useColor();
@@ -54,6 +56,10 @@ const Playlist = ({ id, setMode }: { id: string; setMode: (mode: Mode) => void }
   const topTrack = playlist?.tracks[topIndex];
   const { data: itunesPreviewUrl } = usePreview(topTrack);
   const previewUrl = topTrack?.previewUrl ?? itunesPreviewUrl ?? null;
+
+  // Single effect drives the audio element: swap src when the track changes,
+  // then honor `musicPlaying`. Reset currentTime only when the source
+  // actually changes so pause/resume doesn't jump back to 0.
   useEffect(() => {
     const audio = audioRef.current;
     if (!audio) return;
@@ -63,10 +69,17 @@ const Playlist = ({ id, setMode }: { id: string; setMode: (mode: Mode) => void }
       audio.load();
       return;
     }
-    audio.src = previewUrl;
-    audio.currentTime = 0;
-    audio.play().catch(() => {});
-  }, [previewUrl]);
+    const absoluteSrc = new URL(previewUrl, window.location.href).href;
+    if (audio.src !== absoluteSrc) {
+      audio.src = previewUrl;
+      audio.currentTime = 0;
+    }
+    if (musicPlaying) {
+      audio.play().catch(() => setMusicPlaying(false));
+    } else {
+      audio.pause();
+    }
+  }, [previewUrl, musicPlaying]);
 
   const albumArt = playlist?.tracks[topIndex]?.albumArt;
   useEffect(() => {
@@ -144,7 +157,7 @@ const Playlist = ({ id, setMode }: { id: string; setMode: (mode: Mode) => void }
       )}
       {
         <div className='w-full flex items-center justify-center'>
-          <div className='relative w-[22rem] flex items-center justify-center h-104 my-6'>
+          <div className='relative w-88 flex items-center justify-center h-104 my-6'>
             {playlist?.tracks.map((track, index) => {
               const visibleDepth = 3;
               const offset = index - topIndex;
@@ -211,7 +224,7 @@ const Playlist = ({ id, setMode }: { id: string; setMode: (mode: Mode) => void }
       </div>
       <div className='flex flex-row justify-center items-start'>
         <motion.div
-          className='p-1 flex flex-row gap-1 rounded-xl'
+          className='p-1 flex flex-row gap-1 rounded-xl cursor-pointer'
           initial={false}
           animate={{ opacity: 0.9, backgroundColor: '#121212' }}
         >
@@ -219,14 +232,19 @@ const Playlist = ({ id, setMode }: { id: string; setMode: (mode: Mode) => void }
           <ArrowBack color='inherit' />
         </motion.div>
         <motion.div
-          className='h-64 w-64 rounded-3xl p-6 flex items-center justify-center'
+          className='h-64 w-64 rounded-3xl p-6 flex items-center justify-center cursor-pointer'
           initial={false}
-          animate={{ backgroundColor: color }}
+          animate={{ backgroundColor: color, borderRadius: musicPlaying ? '16px' : '32px' }}
+          whileTap={{ scale: 0.95 }}
+          onClick={() => {
+            if (!previewUrl) return;
+            setMusicPlaying((p) => !p);
+          }}
         >
-          <PlayArrow />
+          {musicPlaying ? <Pause color='inherit' /> : <PlayArrow color='inherit' />}
         </motion.div>
         <motion.div
-          className='p-1 flex flex-row gap-1 rounded-xl'
+          className='p-1 flex flex-row gap-1 rounded-xl cursor-pointer'
           initial={false}
           animate={{ opacity: 0.9, backgroundColor: '#121212' }}
         >
@@ -246,7 +264,7 @@ const Playlist = ({ id, setMode }: { id: string; setMode: (mode: Mode) => void }
         </div>
       </div>
       {/* biome-ignore lint/a11y/useMediaCaption: 30s preview has no captions */}
-      <audio ref={audioRef} preload='auto' />
+      <audio ref={audioRef} preload='auto' onEnded={() => setMusicPlaying(false)} />
     </motion.div>
   );
 };
