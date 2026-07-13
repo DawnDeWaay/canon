@@ -56,10 +56,6 @@ const Playlist = ({ id, setMode }: { id: string; setMode: (mode: Mode) => void }
   const topTrack = playlist?.tracks[topIndex];
   const { data: itunesPreviewUrl } = usePreview(topTrack);
   const previewUrl = topTrack?.previewUrl ?? itunesPreviewUrl ?? null;
-
-  // Single effect drives the audio element: swap src when the track changes,
-  // then honor `musicPlaying`. Reset currentTime only when the source
-  // actually changes so pause/resume doesn't jump back to 0.
   useEffect(() => {
     const audio = audioRef.current;
     if (!audio) return;
@@ -75,7 +71,7 @@ const Playlist = ({ id, setMode }: { id: string; setMode: (mode: Mode) => void }
       audio.currentTime = 0;
     }
     if (musicPlaying) {
-      audio.play().catch(() => setMusicPlaying(false));
+      audio.play().catch(() => {});
     } else {
       audio.pause();
     }
