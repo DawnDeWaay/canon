@@ -23,13 +23,18 @@ type SpotifyTrack = {
 type SpotifyPlaylistItem = {
   added_at: string | null;
   is_local?: boolean;
-  track: SpotifyTrack | null;
+  // February 2026 migration renamed `track` → `item` on playlist entries.
+  // Support both so we keep working if Spotify hands back either shape.
+  item?: SpotifyTrack | null;
+  track?: SpotifyTrack | null;
 };
 
-type SpotifyTracksPage = {
+type SpotifyItemsPage = {
   items: SpotifyPlaylistItem[];
   next: string | null;
   total: number;
+  limit?: number;
+  offset?: number;
 };
 
 type SpotifyPlaylistFull = {
@@ -39,7 +44,11 @@ type SpotifyPlaylistFull = {
   images: SpotifyImage[] | null;
   owner: { id: string; display_name: string | null };
   followers?: { total: number };
-  tracks: SpotifyTracksPage & { limit: number; offset: number };
+  // February 2026 migration renamed `tracks` → `items`. Older responses may
+  // still use `tracks`; accept either. `items` is only present for playlists
+  // the current user owns or collaborates on.
+  items?: SpotifyItemsPage;
+  tracks?: SpotifyItemsPage;
 };
 
 export type PlaylistTrack = {
@@ -67,8 +76,9 @@ export type PlaylistDetail = {
 const API_PREFIX = 'https://api.spotify.com/v1';
 
 function normalizeTrack(item: SpotifyPlaylistItem): PlaylistTrack | null {
-  if (!item.track) return null; // Podcasts / removed tracks come back as null.
-  const t = item.track;
+  // February 2026 migration: `track` was renamed to `item`. Accept both.
+  const t = item.item ?? item.track;
+  if (!t) return null; // Podcasts / removed tracks come back as null.
   // Local files and some odd items can have null artists/album/duration.
   // Guard every field so one bad track doesn't 500 the whole playlist.
   return {
@@ -110,49 +120,36 @@ export async function GET(_req: Request, ctx: { params: Promise<{ id: string }> 
     }
     const head = (await headRes.json()) as SpotifyPlaylistFull;
 
-    // Some playlists (editorial, restricted, or malformed responses) come back
-    // without an embedded `tracks` page. Try the dedicated tracks endpoint as
-    // a fallback, but treat failures there as "no tracks available" rather
-    // than failing the whole request — the header + art are still useful.
-    const headTracks = head.tracks;
-    const headTracksDebug = headTracks
-      ? {
-          total: headTracks.total,
-          limit: headTracks.limit,
-          offset: headTracks.offset,
-          itemCount: Array.isArray(headTracks.items) ? headTracks.items.length : null,
-          next: headTracks.next,
-        }
-      : null;
-    // Full key inventory of the head response so we can see if Spotify is
-    // returning a totally stripped-down shape.
-    const headKeys = head ? Object.keys(head) : null;
-    const items: SpotifyPlaylistItem[] = Array.isArray(headTracks?.items)
-      ? [...headTracks.items]
+    // February 2026 migration renamed `tracks` → `items` on the playlist
+    // object. `items` is only returned for playlists the user owns or
+    // collaborates on. Accept either field name so we keep working if
+    // Spotify hands back either shape.
+    const embeddedPage = head.items ?? head.tracks;
+    const items: SpotifyPlaylistItem[] = Array.isArray(embeddedPage?.items)
+      ? [...embeddedPage.items]
       : [];
     let nextUrl: string | null =
-      headTracks?.next ??
+      embeddedPage?.next ??
       (items.length === 0
-        ? `${API_PREFIX}/playlists/${encodeURIComponent(id)}/tracks?limit=100`
+        ? `${API_PREFIX}/playlists/${encodeURIComponent(id)}/items?limit=100`
         : null);
     // Track the last failure so we can bubble it back to the client for
     // debugging when the tracks list ends up empty.
     let tracksError: { status: number; body: string } | null = null;
-    // 2. Follow `next` until we've drained every track page.
+    // 2. Follow `next` until we've drained every items page.
     while (nextUrl) {
       const path = nextUrl.startsWith(API_PREFIX) ? nextUrl.slice(API_PREFIX.length) : nextUrl;
       const res = await spotifyFetch(path);
       if (!res.ok) {
         const body = await res.text().catch(() => '');
-        console.error(`Spotify tracks page ${res.status}: ${body}`);
+        console.error(`Spotify items page ${res.status}: ${body}`);
         tracksError = { status: res.status, body };
-        // Spotify frequently 403s the /tracks endpoint for playlists whose
-        // header GET succeeded (editorial content, stale scope on the token,
-        // etc.). Rather than 500 the whole request, stop paginating and
-        // return whatever tracks we've already collected.
+        // Spotify 403s the /items endpoint for playlists the user doesn't own
+        // or collaborate on. Rather than 500 the whole request, stop
+        // paginating and return whatever items we've already collected.
         break;
       }
-      const page = (await res.json()) as SpotifyTracksPage;
+      const page = (await res.json()) as SpotifyItemsPage;
       if (Array.isArray(page?.items)) items.push(...page.items);
       nextUrl = page?.next ?? null;
     }
@@ -176,7 +173,7 @@ export async function GET(_req: Request, ctx: { params: Promise<{ id: string }> 
         .filter((t): t is PlaylistTrack => t !== null),
     };
 
-    return NextResponse.json({ playlist, tracksError, headTracksDebug, headKeys });
+    return NextResponse.json({ playlist, tracksError });
   } catch (err) {
     console.error('playlist route error', err);
     const message = err instanceof Error ? `${err.name}: ${err.message}` : String(err);
