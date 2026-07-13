@@ -232,7 +232,7 @@ const Playlist = ({ id, setMode }: { id: string; setMode: (mode: Mode) => void }
           <ArrowBack color='inherit' />
         </motion.div>
         <motion.div
-          className='h-64 w-64 rounded-3xl p-6 flex items-center justify-center cursor-pointer'
+          className='h-16 w-16 rounded-3xl p-6 flex items-center justify-center cursor-pointer'
           initial={false}
           animate={{ backgroundColor: color, borderRadius: musicPlaying ? '16px' : '32px' }}
           whileTap={{ scale: 0.95 }}
