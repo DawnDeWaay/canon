@@ -4,7 +4,7 @@
 import { ArrowBack, ArrowDownward, ArrowForward, ArrowUpward } from '@mui/icons-material';
 import { getColor } from 'colorthief';
 import { motion } from 'motion/react';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useColor } from '../context/ColorContext';
 import { usePlaylist } from '../hooks/usePlaylist';
 import type { Mode } from '../page';
@@ -30,6 +30,7 @@ const KEY_TO_DIRECTION: Record<string, Direction> = {
 const Playlist = ({ id, setMode }: { id: string; setMode: (mode: Mode) => void }) => {
   const [pressed, setPressed] = useState<Set<Direction>>(new Set());
   const [topIndex, setTopIndex] = useState(0);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
 
   const { setColor } = useColor();
   const { data: playlist } = usePlaylist(id);
@@ -42,6 +43,27 @@ const Playlist = ({ id, setMode }: { id: string; setMode: (mode: Mode) => void }
       setTopIndex((prev) => Math.max(prev - 1, 0));
     }
   }, [pressed, playlist?.tracks.length]);
+
+  // Play the current top track's 30s preview. Spotify deprecated preview_url
+  // for many third-party apps in late 2024, so this will silently no-op
+  // (previewUrl === null) for most tracks unless your app has access.
+  const topTrack = playlist?.tracks[topIndex];
+  const previewUrl = topTrack?.previewUrl ?? null;
+  useEffect(() => {
+    const audio = audioRef.current;
+    if (!audio) return;
+    if (!previewUrl) {
+      audio.pause();
+      audio.removeAttribute('src');
+      audio.load();
+      return;
+    }
+    audio.src = previewUrl;
+    audio.currentTime = 0;
+    // play() rejects if the user hasn't interacted with the page yet
+    // (browser autoplay policy). Swallow that so it doesn't spam the console.
+    audio.play().catch(() => {});
+  }, [previewUrl]);
 
   // Extract the dominant color from the current top track's album art.
   const albumArt = playlist?.tracks[topIndex]?.albumArt;
@@ -118,33 +140,35 @@ const Playlist = ({ id, setMode }: { id: string; setMode: (mode: Mode) => void }
           {playlist?.title}
         </motion.div>
       )}
-{      <div className='w-full flex items-center justify-center'>
-        <div className='relative w-[22rem] flex items-center justify-center h-104 my-6'>
-          {playlist?.tracks.map((track, index) => {
-            const visibleDepth = 3;
-            const offset = index - topIndex;
-            const clamped = Math.min(Math.max(offset, 0), visibleDepth);
-            const isBuried = offset > visibleDepth;
-            const isPast = offset < 0;
-            return (
-              <motion.div
-                key={track.id ?? index}
-                className='absolute inset-0'
-                style={{ zIndex: playlist.tracks.length - index }}
-                initial={false}
-                animate={{
-                  y: clamped * 12,
-                  scale: 1 - clamped * 0.04,
-                  opacity: isBuried || isPast ? 0 : 1 - clamped * 0.15,
-                }}
-                transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-              >
-                <SongCard name={track.name} art={track.albumArt} artist={track.artists} />
-              </motion.div>
-            );
-          })}
+      {
+        <div className='w-full flex items-center justify-center'>
+          <div className='relative w-[22rem] flex items-center justify-center h-104 my-6'>
+            {playlist?.tracks.map((track, index) => {
+              const visibleDepth = 3;
+              const offset = index - topIndex;
+              const clamped = Math.min(Math.max(offset, 0), visibleDepth);
+              const isBuried = offset > visibleDepth;
+              const isPast = offset < 0;
+              return (
+                <motion.div
+                  key={track.id ?? index}
+                  className='absolute inset-0'
+                  style={{ zIndex: playlist.tracks.length - index }}
+                  initial={false}
+                  animate={{
+                    y: clamped * 12,
+                    scale: 1 - clamped * 0.04,
+                    opacity: isBuried || isPast ? 0 : 1 - clamped * 0.15,
+                  }}
+                  transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+                >
+                  <SongCard name={track.name} art={track.albumArt} artist={track.artists} />
+                </motion.div>
+              );
+            })}
+          </div>
         </div>
-      </div>}
+      }
       <div className='w-full flex justify-center items-center'>
         <motion.div
           className='p-1 flex flex-row gap-1 rounded-xl'
@@ -192,6 +216,8 @@ const Playlist = ({ id, setMode }: { id: string; setMode: (mode: Mode) => void }
           ← Back
         </div>
       </div>
+      {/* biome-ignore lint/a11y/useMediaCaption: 30s preview has no captions */}
+      <audio ref={audioRef} preload='auto' />
     </motion.div>
   );
 };

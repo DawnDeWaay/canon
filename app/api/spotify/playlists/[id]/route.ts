@@ -59,6 +59,7 @@ export type PlaylistTrack = {
   albumArt: string;
   durationMs: number;
   uri: string;
+  previewUrl: string | null;
   addedAt: string | null;
   isLocal: boolean;
 };
@@ -89,6 +90,7 @@ function normalizeTrack(item: SpotifyPlaylistItem): PlaylistTrack | null {
     albumArt: t.album?.images?.[0]?.url ?? '',
     durationMs: typeof t.duration_ms === 'number' ? t.duration_ms : 0,
     uri: t.uri ?? '',
+    previewUrl: t.preview_url ?? null,
     addedAt: item.added_at,
     isLocal: item.is_local ?? false,
   };
