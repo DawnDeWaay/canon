@@ -6,6 +6,7 @@ import { useColor } from '../context/ColorContext';
 
 const FLIP_DURATION = 1.6; // seconds
 const HOVER_DURATION = 0.2; // seconds
+const COLOR_DURATION = 0.8; // seconds
 const MIN_INTERVAL_MS = 10_000;
 const MAX_INTERVAL_MS = 60_000;
 
@@ -37,7 +38,10 @@ const Star = ({
   useEffect(() => {
     if (!chance) return;
     if (isHoveringRef.current) return;
-    controls.set({ fill: resolvedColor });
+    controls.start({
+      fill: resolvedColor,
+      transition: { duration: COLOR_DURATION, ease: 'easeInOut' },
+    });
   }, [chance, controls, resolvedColor]);
 
   useEffect(() => {
