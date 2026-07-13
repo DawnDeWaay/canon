@@ -117,7 +117,7 @@ const Playlist = ({ id, setMode }: { id: string; setMode: (mode: Mode) => void }
         {playlist?.title}
       </motion.div>
       <div className='w-full flex items-center justify-center'>
-        <div className='relative w-fit flex items-center justify-center h-104 my-6'>
+        <div className='relative w-[22rem] flex items-center justify-center h-104 my-6'>
           {playlist?.tracks.map((track, index) => {
             const visibleDepth = 3;
             const offset = index - topIndex;
