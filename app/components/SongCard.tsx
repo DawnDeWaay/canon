@@ -4,7 +4,7 @@ import Image from 'next/image';
 const SongCard = ({ name, art }: { name: string; art: string }) => {
   return (
     <motion.div
-      className='h-96 w-auto p-4 rounded-3xl flex flex-col items-center justify-start'
+      className='h-96 w-fit p-4 rounded-3xl flex flex-col items-center justify-start'
       initial={false}
       animate={{ backgroundColor: '#121212' }}
     >
