@@ -222,7 +222,7 @@ const Playlist = ({ id, setMode }: { id: string; setMode: (mode: Mode) => void }
           </motion.div>
         </div>
       </div>
-      <div className='flex flex-row justify-center items-start'>
+      <div className='flex flex-row justify-center items-start gap-2'>
         <motion.div
           className='p-1 flex flex-row gap-1 rounded-xl cursor-pointer'
           initial={false}
