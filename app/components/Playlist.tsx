@@ -118,7 +118,7 @@ const Playlist = ({ id, setMode }: { id: string; setMode: (mode: Mode) => void }
           {playlist?.title}
         </motion.div>
       )}
-      <div className='w-full flex items-center justify-center'>
+{      <div className='w-full flex items-center justify-center'>
         <div className='relative w-[22rem] flex items-center justify-center h-104 my-6'>
           {playlist?.tracks.map((track, index) => {
             const visibleDepth = 3;
@@ -144,7 +144,7 @@ const Playlist = ({ id, setMode }: { id: string; setMode: (mode: Mode) => void }
             );
           })}
         </div>
-      </div>
+      </div>}
       <div className='w-full flex justify-center items-center'>
         <motion.div
           className='p-1 flex flex-row gap-1 rounded-xl'

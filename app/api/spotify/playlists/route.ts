@@ -10,6 +10,8 @@ type SpotifyPlaylist = {
   id: string;
   name: string;
   images: SpotifyPlaylistImage[] | null;
+  owner: { id: string; display_name: string | null };
+  collaborative: boolean;
 };
 type SpotifyPlaylistsResponse = {
   items: SpotifyPlaylist[];
@@ -20,6 +22,8 @@ export type PlaylistSummary = {
   id: string;
   title: string;
   art: string;
+  ownerId: string;
+  collaborative: boolean;
 };
 
 export async function GET() {
@@ -47,6 +51,8 @@ export async function GET() {
       id: p.id,
       title: p.name,
       art: p.images?.[0]?.url ?? '',
+      ownerId: p.owner?.id ?? '',
+      collaborative: p.collaborative ?? false,
     }));
 
     return NextResponse.json({ playlists });
