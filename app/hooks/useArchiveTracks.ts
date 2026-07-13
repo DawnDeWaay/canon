@@ -26,15 +26,12 @@ export type ArchiveResult = {
 };
 
 async function archiveTracks(playlistId: string, trackIds: string[]): Promise<ArchiveResult> {
-  const res = await fetch(
-    `/api/spotify/playlists/${encodeURIComponent(playlistId)}/archive`,
-    {
-      method: 'POST',
-      credentials: 'include',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ tracks: trackIds }),
-    }
-  );
+  const res = await fetch(`/api/spotify/playlists/${encodeURIComponent(playlistId)}/archive`, {
+    method: 'POST',
+    credentials: 'include',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ tracks: trackIds }),
+  });
   if (!res.ok) {
     let code = 'unknown';
     let detail = '';
