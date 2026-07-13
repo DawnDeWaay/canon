@@ -110,8 +110,14 @@ export async function GET(_req: Request, ctx: { params: Promise<{ id: string }> 
     }
     const head = (await headRes.json()) as SpotifyPlaylistFull;
 
-    const items: SpotifyPlaylistItem[] = [...head.tracks.items];
-    let nextUrl: string | null = head.tracks.next;
+    // Some playlists (editorial, restricted, or malformed responses) come back
+    // without an embedded `tracks` page. Fall back to an empty page so we can
+    // still return the playlist header instead of 500'ing.
+    const headTracks = head.tracks;
+    const items: SpotifyPlaylistItem[] = Array.isArray(headTracks?.items)
+      ? [...headTracks.items]
+      : [];
+    let nextUrl: string | null = headTracks?.next ?? null;
 
     // 2. Follow `next` until we've drained every track page.
     while (nextUrl) {
@@ -123,8 +129,8 @@ export async function GET(_req: Request, ctx: { params: Promise<{ id: string }> 
         return NextResponse.json({ error: 'spotify_error', detail: body }, { status: res.status });
       }
       const page = (await res.json()) as SpotifyTracksPage;
-      items.push(...page.items);
-      nextUrl = page.next;
+      if (Array.isArray(page?.items)) items.push(...page.items);
+      nextUrl = page?.next ?? null;
     }
 
     const playlist: PlaylistDetail = {
