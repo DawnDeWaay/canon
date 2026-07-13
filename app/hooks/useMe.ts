@@ -10,7 +10,7 @@ export type SpotifyMe = {
 };
 
 async function fetchMe(): Promise<SpotifyMe | null> {
-  const res = await fetch('/api/auth/me', { credentials: 'include' });
+  const res = await fetch('/api/auth/me', { credentials: 'include', cache: 'no-store' });
   if (!res.ok) return null;
   const data = (await res.json()) as { user: SpotifyMe | null };
   return data.user;

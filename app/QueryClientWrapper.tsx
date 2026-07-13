@@ -9,8 +9,7 @@ const QueryClientWrapper = ({ children }: { children: React.ReactNode }) => {
       new QueryClient({
         defaultOptions: {
           queries: {
-            staleTime: 1000 * 60 * 5,
-            gcTime: 1000 * 60 * 30,
+            staleTime: 0,
             refetchOnWindowFocus: false,
             refetchOnReconnect: true,
             retry: 2,

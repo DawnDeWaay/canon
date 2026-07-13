@@ -9,9 +9,15 @@ const Nameplate = ({ name, image }: { name: string; image: string }) => {
     if (loggingOut) return;
     setLoggingOut(true);
     try {
-      await fetch('/api/auth/logout', { method: 'POST', credentials: 'include' });
+      await fetch('/api/auth/logout', {
+        method: 'POST',
+        credentials: 'include',
+        cache: 'no-store',
+      });
     } catch {}
-    window.location.href = '/';
+    // Force a full navigation + reload so no cached React state or HTTP
+    // responses keep the previous session visible.
+    window.location.replace('/');
   };
 
   return (
