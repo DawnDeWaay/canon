@@ -169,41 +169,43 @@ const Playlist = ({ id, setMode }: { id: string; setMode: (mode: Mode) => void }
           </div>
         </div>
       }
-      <div className='w-full flex justify-center items-center'>
-        <motion.div
-          className='p-1 flex flex-row gap-1 rounded-xl'
-          initial={false}
-          animate={{ opacity: 0.9, backgroundColor: '#121212' }}
-        >
-          <motion.span
-            className='flex items-center justify-center p-1 rounded-md'
-            animate={arrowAnim('left')}
-            transition={transition}
+      <div className='w-full p-2 fixed bottom-0 left-0'>
+        <div className='w-full flex justify-center items-center'>
+          <motion.div
+            className='p-1 flex flex-row gap-1 rounded-xl'
+            initial={false}
+            animate={{ opacity: 0.9, backgroundColor: '#121212' }}
           >
-            <ArrowBack color='inherit' />
-          </motion.span>
-          <motion.span
-            className='flex items-center justify-center p-1 rounded-md'
-            animate={arrowAnim('down')}
-            transition={transition}
-          >
-            <ArrowDownward color='inherit' />
-          </motion.span>
-          <motion.span
-            className='flex items-center justify-center p-1 rounded-md'
-            animate={arrowAnim('up')}
-            transition={transition}
-          >
-            <ArrowUpward color='inherit' />
-          </motion.span>
-          <motion.span
-            className='flex items-center justify-center p-1 rounded-md'
-            animate={arrowAnim('right')}
-            transition={transition}
-          >
-            <ArrowForward color='inherit' />
-          </motion.span>
-        </motion.div>
+            <motion.span
+              className='flex items-center justify-center p-1 rounded-md'
+              animate={arrowAnim('left')}
+              transition={transition}
+            >
+              <ArrowBack color='inherit' />
+            </motion.span>
+            <motion.span
+              className='flex items-center justify-center p-1 rounded-md'
+              animate={arrowAnim('down')}
+              transition={transition}
+            >
+              <ArrowDownward color='inherit' />
+            </motion.span>
+            <motion.span
+              className='flex items-center justify-center p-1 rounded-md'
+              animate={arrowAnim('up')}
+              transition={transition}
+            >
+              <ArrowUpward color='inherit' />
+            </motion.span>
+            <motion.span
+              className='flex items-center justify-center p-1 rounded-md'
+              animate={arrowAnim('right')}
+              transition={transition}
+            >
+              <ArrowForward color='inherit' />
+            </motion.span>
+          </motion.div>
+        </div>
       </div>
       <div className='w-full flex justify-center items-center mt-2'>
         <div
