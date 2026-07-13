@@ -18,6 +18,11 @@ export const SCOPES = [
   'user-read-private',
   'playlist-read-private',
   'playlist-read-collaborative',
+  // Needed so the summary screen can DELETE discarded tracks from the
+  // user's playlists. Covers both public and private playlists — Spotify
+  // requires the matching scope for whichever visibility the playlist has.
+  'playlist-modify-private',
+  'playlist-modify-public',
 ].join(' ');
 
 /** OAuth env config, validated once. */

@@ -192,3 +192,54 @@ export async function GET(_req: Request, ctx: { params: Promise<{ id: string }> 
     return NextResponse.json({ error: 'server_error', message, stack }, { status: 500 });
   }
 }
+
+// Remove one or more tracks from the playlist. Body: `{ tracks: string[] }`
+// where each entry is a Spotify track id (or full URI — we normalize).
+// Requires `playlist-modify-{public,private}` on the user's session.
+export async function DELETE(req: Request, ctx: { params: Promise<{ id: string }> }) {
+  const { id } = await ctx.params;
+  if (!id) {
+    return NextResponse.json({ error: 'missing_id' }, { status: 400 });
+  }
+
+  let body: { tracks?: unknown };
+  try {
+    body = (await req.json()) as { tracks?: unknown };
+  } catch {
+    return NextResponse.json({ error: 'invalid_json' }, { status: 400 });
+  }
+  const rawTracks = Array.isArray(body.tracks) ? body.tracks : [];
+  const uris = rawTracks
+    .filter((t): t is string => typeof t === 'string' && t.length > 0)
+    .map((t) => (t.startsWith('spotify:track:') ? t : `spotify:track:${t}`));
+  if (uris.length === 0) {
+    return NextResponse.json({ error: 'no_tracks' }, { status: 400 });
+  }
+
+  try {
+    // Spotify caps the DELETE payload at 100 tracks per request — batch it.
+    for (let i = 0; i < uris.length; i += 100) {
+      const batch = uris.slice(i, i + 100);
+      const res = await spotifyFetch(`/playlists/${encodeURIComponent(id)}/tracks`, {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ tracks: batch.map((uri) => ({ uri })) }),
+      });
+      if (!res.ok) {
+        const detail = await res.text().catch(() => '');
+        console.error(`Spotify DELETE tracks ${res.status}: ${detail}`);
+        const code =
+          res.status === 401 ? 'unauthorized' : res.status === 403 ? 'forbidden' : 'spotify_error';
+        return NextResponse.json({ error: code, detail }, { status: res.status });
+      }
+    }
+    return NextResponse.json({ removed: uris.length });
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err);
+    if (message.includes('Not authenticated')) {
+      return NextResponse.json({ error: 'unauthorized' }, { status: 401 });
+    }
+    console.error('DELETE tracks error', err);
+    return NextResponse.json({ error: 'server_error', message }, { status: 500 });
+  }
+}
