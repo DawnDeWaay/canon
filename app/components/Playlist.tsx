@@ -241,7 +241,11 @@ const Playlist = ({ id, setMode }: { id: string; setMode: (mode: Mode) => void }
             setMusicPlaying((p) => !p);
           }}
         >
-          {musicPlaying ? <Pause color='inherit' /> : <PlayArrow color='inherit' />}
+          {musicPlaying ? (
+            <Pause color='inherit' fontSize='large' />
+          ) : (
+            <PlayArrow color='inherit' fontSize='large' />
+          )}
         </motion.div>
         <motion.div
           className='p-2 flex flex-row gap-1 rounded-xl cursor-pointer'
