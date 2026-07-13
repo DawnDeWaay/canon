@@ -163,35 +163,76 @@ export async function setTokenCookies(tokens: TokenResponse, existingRefresh?: s
   }
 }
 
+/**
+ * Build the Set-Cookie header strings that clear every auth cookie we've ever
+ * written. Returned as raw strings because Next.js's `cookies().set()` /
+ * `.delete()` are keyed by cookie name in the response Map — setting the same
+ * name twice (e.g. for two different paths) overwrites the previous entry, so
+ * only one Set-Cookie header per name actually gets emitted. Manually
+ * appending headers is the only way to send multiple Set-Cookie lines for the
+ * same name (one per path), which is required to clear cookies that were
+ * written at both '/' and '/api/auth' across versions of this app.
+ *
+ * We also match the original cookie's `Secure` / `HttpOnly` / `SameSite`
+ * flags because some browsers refuse to overwrite a cookie originally set
+ * with `Secure` unless the clearing Set-Cookie is also `Secure`.
+ */
+export function buildClearAuthCookieHeaders(): string[] {
+  // (name, path, httpOnly) tuples matching how each cookie was originally set
+  // by `setTokenCookies` and the login route. We include both '/' and
+  // '/api/auth' entries for the OAuth-transient cookies to cover older
+  // versions of this app that may have written them at the other path.
+  const entries: Array<{ name: string; path: string; httpOnly: boolean }> = [
+    { name: COOKIE.access, path: '/', httpOnly: true },
+    { name: COOKIE.refresh, path: '/', httpOnly: true },
+    { name: COOKIE.refresh, path: '/api/auth', httpOnly: true },
+    { name: COOKIE.expiresAt, path: '/', httpOnly: false },
+    { name: COOKIE.scope, path: '/', httpOnly: false },
+    { name: COOKIE.verifier, path: '/api/auth', httpOnly: true },
+    { name: COOKIE.state, path: '/api/auth', httpOnly: true },
+    { name: COOKIE.returnTo, path: '/api/auth', httpOnly: true },
+  ];
+  return entries.map(({ name, path, httpOnly }) => {
+    const parts = [
+      `${name}=`,
+      `Path=${path}`,
+      'Max-Age=0',
+      'Expires=Thu, 01 Jan 1970 00:00:00 GMT',
+      'SameSite=Lax',
+    ];
+    if (httpOnly) parts.push('HttpOnly');
+    if (isProd) parts.push('Secure');
+    return parts.join('; ');
+  });
+}
+
+/**
+ * Best-effort clear used internally when a refresh call fails. Only clears
+ * the token cookies at their canonical '/' path — enough to force the app
+ * back to the splash screen on the next request. For a full logout that
+ * also handles stale cookies at '/api/auth', use `buildClearAuthCookieHeaders`
+ * and append the headers to the outgoing response.
+ */
 export async function clearAuthCookies() {
   const jar = await cookies();
-  // Clear at every path we've ever written these cookies at. Cookies are keyed
-  // by name+domain+path, so a stale cookie at '/api/auth' from a previous
-  // version of this app would silently keep the user "signed in" via refresh
-  // if not cleared here.
-  const paths = ['/', '/api/auth'];
-  const names = [
-    COOKIE.access,
-    COOKIE.refresh,
-    COOKIE.expiresAt,
-    COOKIE.scope,
-    COOKIE.verifier,
-    COOKIE.state,
-    COOKIE.returnTo,
-  ];
-  for (const name of names) {
-    for (const path of paths) {
-      jar.set(name, '', {
-        path,
-        maxAge: 0,
-        expires: new Date(0),
-        httpOnly: true,
-        secure: isProd,
-        sameSite: 'lax',
-      });
-    }
-    jar.delete(name);
-  }
+  // Each cookie name is set exactly once so we don't hit the response-cookie
+  // Map collision that would otherwise drop earlier entries.
+  jar.set(COOKIE.access, '', {
+    path: '/',
+    maxAge: 0,
+    httpOnly: true,
+    secure: isProd,
+    sameSite: 'lax',
+  });
+  jar.set(COOKIE.refresh, '', {
+    path: '/',
+    maxAge: 0,
+    httpOnly: true,
+    secure: isProd,
+    sameSite: 'lax',
+  });
+  jar.set(COOKIE.expiresAt, '', { path: '/', maxAge: 0, secure: isProd, sameSite: 'lax' });
+  jar.set(COOKIE.scope, '', { path: '/', maxAge: 0, secure: isProd, sameSite: 'lax' });
 }
 
 export async function getValidAccessToken(): Promise<string | null> {

@@ -1,10 +1,12 @@
 /** biome-ignore-all lint/suspicious/noDocumentCookie: <explanation> */
+import { useQueryClient } from '@tanstack/react-query';
 import { motion } from 'motion/react';
 import Image from 'next/image';
 import { useState } from 'react';
 
 const Nameplate = ({ name, image }: { name: string; image: string }) => {
   const [loggingOut, setLoggingOut] = useState(false);
+  const qc = useQueryClient();
 
   const handleLogOut = async () => {
     if (loggingOut) return;
@@ -15,14 +17,27 @@ const Nameplate = ({ name, image }: { name: string; image: string }) => {
         credentials: 'include',
         cache: 'no-store',
       });
-    } catch {}
-    const clientCookieNames = ['sp_expires_at'];
+    } catch {
+      // Ignore — we still want to fall through to the client-side cleanup
+      // and reload so the user isn't stranded on the app when the network
+      // hiccups.
+    }
+    // Clear the JS-visible cookies ourselves. The httpOnly access and
+    // refresh cookies are handled by the server endpoint above.
+    const clientCookieNames = ['sp_expires_at', 'sp_scope'];
     for (const name of clientCookieNames) {
       for (const path of ['/', '/api/auth']) {
         document.cookie = `${name}=; Path=${path}; Max-Age=0; Expires=Thu, 01 Jan 1970 00:00:00 GMT; SameSite=Lax`;
       }
     }
-    window.location.replace('/');
+    // Blow away every cached query so `useMe` and friends refetch from
+    // scratch on the fresh page. Otherwise the reload can hydrate with a
+    // still-signed-in view because the query cache persisted across the
+    // navigation attempt in some edge cases.
+    qc.clear();
+    // Cache-bust the reload so any intermediate CDN/browser cache of `/`
+    // can't hand back a version that still assumes the user is signed in.
+    window.location.replace(`/?_=${Date.now()}`);
   };
 
   return (
