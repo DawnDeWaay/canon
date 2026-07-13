@@ -9,6 +9,7 @@ import {
   Pause,
   PlayArrow,
 } from '@mui/icons-material';
+import { CircularProgress } from '@mui/material';
 import { getColor, getSwatches } from 'colorthief';
 import { motion } from 'motion/react';
 import { useEffect, useRef, useState } from 'react';
@@ -17,7 +18,6 @@ import { usePlaylist } from '../hooks/usePlaylist';
 import { usePreview } from '../hooks/usePreview';
 import type { Mode } from '../page';
 import SongCard from './SongCard';
-import { CircularProgress } from '@mui/material';
 
 type Direction = 'left' | 'down' | 'up' | 'right';
 
