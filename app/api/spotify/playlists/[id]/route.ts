@@ -115,6 +115,15 @@ export async function GET(_req: Request, ctx: { params: Promise<{ id: string }> 
     // a fallback, but treat failures there as "no tracks available" rather
     // than failing the whole request — the header + art are still useful.
     const headTracks = head.tracks;
+    const headTracksDebug = headTracks
+      ? {
+          total: headTracks.total,
+          limit: headTracks.limit,
+          offset: headTracks.offset,
+          itemCount: Array.isArray(headTracks.items) ? headTracks.items.length : null,
+          next: headTracks.next,
+        }
+      : null;
     const items: SpotifyPlaylistItem[] = Array.isArray(headTracks?.items)
       ? [...headTracks.items]
       : [];
@@ -164,7 +173,7 @@ export async function GET(_req: Request, ctx: { params: Promise<{ id: string }> 
         .filter((t): t is PlaylistTrack => t !== null),
     };
 
-    return NextResponse.json({ playlist, tracksError });
+    return NextResponse.json({ playlist, tracksError, headTracksDebug });
   } catch (err) {
     console.error('playlist route error', err);
     const message = err instanceof Error ? `${err.name}: ${err.message}` : String(err);
