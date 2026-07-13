@@ -220,16 +220,21 @@ export async function DELETE(req: Request, ctx: { params: Promise<{ id: string }
 
   try {
     // Spotify caps the DELETE payload at 100 tracks per request — batch it.
+    // February 2026 migration: the endpoint moved from
+    // `DELETE /playlists/{id}/tracks` (body key `tracks`) to
+    // `DELETE /playlists/{id}/items` (body key `items`). The old path is
+    // deprecated and now returns 403 in cases the new path handles fine,
+    // so we call the new one.
     for (let i = 0; i < uris.length; i += 100) {
       const batch = uris.slice(i, i + 100);
-      const res = await spotifyFetch(`/playlists/${encodeURIComponent(id)}/tracks`, {
+      const res = await spotifyFetch(`/playlists/${encodeURIComponent(id)}/items`, {
         method: 'DELETE',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ tracks: batch.map((uri) => ({ uri })) }),
+        body: JSON.stringify({ items: batch.map((uri) => ({ uri })) }),
       });
       if (!res.ok) {
         const detail = await res.text().catch(() => '');
-        console.error(`Spotify DELETE tracks ${res.status}: ${detail}`);
+        console.error(`Spotify DELETE items ${res.status}: ${detail}`);
         const code =
           res.status === 401 ? 'unauthorized' : res.status === 403 ? 'forbidden' : 'spotify_error';
         return NextResponse.json({ error: code, detail }, { status: res.status });
