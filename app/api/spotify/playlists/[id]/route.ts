@@ -1,6 +1,10 @@
 import { NextResponse } from 'next/server';
 import { spotifyFetch } from '@/lib/spotify';
 
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+export const fetchCache = 'force-no-store';
+
 type SpotifyImage = { url: string; width?: number | null; height?: number | null };
 
 type SpotifyArtist = { id: string; name: string };
