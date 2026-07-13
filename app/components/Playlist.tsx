@@ -169,7 +169,7 @@ const Playlist = ({ id, setMode }: { id: string; setMode: (mode: Mode) => void }
           </div>
         </div>
       }
-      <div className='w-full p-2 fixed bottom-0 left-0'>
+      <div className='w-full p-2 fixed bottom-0 left-0 flex items-center justify-center'>
         <div className='w-full flex justify-center items-center'>
           <motion.div
             className='p-1 flex flex-row gap-1 rounded-xl'
