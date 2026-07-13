@@ -4,7 +4,7 @@ import { motion } from 'motion/react';
 import Image from 'next/image';
 import { useColor } from '../context/ColorContext';
 import { usePlaylist } from '../hooks/usePlaylist';
-import { useRemoveTracks } from '../hooks/useRemoveTracks';
+import { RemoveTracksError, useRemoveTracks } from '../hooks/useRemoveTracks';
 import type { Mode } from '../page';
 
 type SummaryMode = Extract<Mode, { type: 'summary' }>;
@@ -12,7 +12,26 @@ type SummaryMode = Extract<Mode, { type: 'summary' }>;
 const Summary = ({ mode, setMode }: { mode: SummaryMode; setMode: (mode: Mode) => void }) => {
   const { color, setColor } = useColor();
   const { data: playlist, isLoading } = usePlaylist(mode.playlistId);
-  const { mutate: removeTracks, isPending, isError } = useRemoveTracks(mode.playlistId);
+  const { mutate: removeTracks, isPending, isError, error } = useRemoveTracks(mode.playlistId);
+
+  // A 403 from Spotify's DELETE endpoint almost always means the current
+  // access token was issued before we added the `playlist-modify-*` scopes.
+  // Re-authing forces Spotify to re-consent and mint a token with the new
+  // scopes attached.
+  const needsReauth = error instanceof RemoveTracksError && error.status === 403;
+  const notOwner =
+    error instanceof RemoveTracksError && error.detail.toLowerCase().includes('not the owner');
+
+  const reauth = async () => {
+    try {
+      await fetch('/api/auth/logout', { method: 'POST', credentials: 'include' });
+    } catch {
+      // Even if logout fails, the redirect below will trigger a fresh consent
+      // via `show_dialog=true`, so ignore the error.
+    }
+    const returnTo = encodeURIComponent(window.location.pathname);
+    window.location.href = `/api/auth/login?returnTo=${returnTo}`;
+  };
 
   const discardedSet = new Set(mode.tracks);
   const discardedTracks = (playlist?.tracks ?? []).filter((t) => discardedSet.has(t.id));
@@ -80,30 +99,46 @@ const Summary = ({ mode, setMode }: { mode: SummaryMode; setMode: (mode: Mode) =
           ))}
         </div>
       )}
-
-      {isError && (
-        <div className='text-red-400 text-sm mt-3'>
-          Couldn&apos;t remove tracks. Try signing out and back in.
-        </div>
-      )}
-
-      <motion.button
-        type='button'
-        disabled={isPending}
-        className='cursor-pointer text-white px-4 py-2 mt-4 rounded-xl flex items-center gap-2 text-center disabled:opacity-60 disabled:cursor-not-allowed'
-        whileTap={{ scale: isPending ? 1 : 0.98 }}
-        initial={false}
-        animate={{
-          backgroundColor: color,
-          opacity: 1,
-          transition: { delay: 0.3, duration: 0.8 },
-        }}
-        exit={{ opacity: 0 }}
-        onClick={handleSave}
-      >
-        {isPending ? 'Removing…' : discardedTracks.length === 0 ? 'Done' : 'Remove & Finish'}
-        <DoneAll color='inherit' />
-      </motion.button>
+      <div className='flex flex-row gap-2 justify-center'>
+        <motion.button
+          type='button'
+          disabled={isPending}
+          className='cursor-pointer text-white px-4 py-2 mt-4 rounded-xl flex items-center gap-2 text-center disabled:opacity-60 disabled:cursor-not-allowed'
+          whileTap={{ scale: isPending ? 1 : 0.98 }}
+          initial={false}
+          animate={{
+            backgroundColor: color,
+            opacity: 1,
+            transition: { delay: 0.3, duration: 0.8 },
+          }}
+          exit={{ opacity: 0 }}
+          onClick={handleSave}
+        >
+          {isPending ? 'Removing…' : discardedTracks.length === 0 ? 'Done' : 'Remove & Finish'}
+          <DoneAll color='inherit' />
+        </motion.button>
+        <motion.button
+          type='button'
+          disabled={isPending}
+          className='cursor-pointer text-white px-4 py-2 mt-4 rounded-xl flex items-center gap-2 text-center disabled:opacity-60 disabled:cursor-not-allowed'
+          whileTap={{ scale: isPending ? 1 : 0.98 }}
+          initial={false}
+          animate={{
+            backgroundColor: color,
+            opacity: 1,
+            transition: { delay: 0.3, duration: 0.8 },
+          }}
+          exit={{ opacity: 0 }}
+          onClick={handleSave}
+        >
+          {isPending
+            ? 'Removing…'
+            : discardedTracks.length === 0
+              ? 'Done'
+              : 'Remove & Archive to New Playlist'}
+          <DoneAll color='inherit' />
+        </motion.button>
+      </div>
 
       <div className='w-full flex justify-center items-center mt-2'>
         <button
