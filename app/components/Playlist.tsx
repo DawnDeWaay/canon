@@ -116,30 +116,32 @@ const Playlist = ({ id, setMode }: { id: string; setMode: (mode: Mode) => void }
       >
         {playlist?.title}
       </motion.div>
-      <div className='relative w-full flex items-center justify-center h-104 my-6'>
-        {playlist?.tracks.map((track, index) => {
-          const visibleDepth = 3;
-          const offset = index - topIndex;
-          const clamped = Math.min(Math.max(offset, 0), visibleDepth);
-          const isBuried = offset > visibleDepth;
-          const isPast = offset < 0;
-          return (
-            <motion.div
-              key={track.id ?? index}
-              className='absolute inset-0'
-              style={{ zIndex: playlist.tracks.length - index }}
-              initial={false}
-              animate={{
-                y: clamped * 12,
-                scale: 1 - clamped * 0.04,
-                opacity: isBuried || isPast ? 0 : 1 - clamped * 0.15,
-              }}
-              transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-            >
-              <SongCard name={track.name} art={track.albumArt} artist={track.artists} />
-            </motion.div>
-          );
-        })}
+      <div className='w-full flex items-center justify-center'>
+        <div className='relative w-fit flex items-center justify-center h-104 my-6'>
+          {playlist?.tracks.map((track, index) => {
+            const visibleDepth = 3;
+            const offset = index - topIndex;
+            const clamped = Math.min(Math.max(offset, 0), visibleDepth);
+            const isBuried = offset > visibleDepth;
+            const isPast = offset < 0;
+            return (
+              <motion.div
+                key={track.id ?? index}
+                className='absolute inset-0'
+                style={{ zIndex: playlist.tracks.length - index }}
+                initial={false}
+                animate={{
+                  y: clamped * 12,
+                  scale: 1 - clamped * 0.04,
+                  opacity: isBuried || isPast ? 0 : 1 - clamped * 0.15,
+                }}
+                transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+              >
+                <SongCard name={track.name} art={track.albumArt} artist={track.artists} />
+              </motion.div>
+            );
+          })}
+        </div>
       </div>
       <div className='w-full flex justify-center items-center'>
         <motion.div
