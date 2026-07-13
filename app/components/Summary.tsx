@@ -14,8 +14,6 @@ const Summary = ({ mode, setMode }: { mode: SummaryMode; setMode: (mode: Mode) =
   const { data: playlist, isLoading } = usePlaylist(mode.playlistId);
   const { mutate: removeTracks, isPending, isError } = useRemoveTracks(mode.playlistId);
 
-  // Preserve the order the user discarded them in — filter the full track
-  // list by whether it's in the discarded set, keyed by id.
   const discardedSet = new Set(mode.tracks);
   const discardedTracks = (playlist?.tracks ?? []).filter((t) => discardedSet.has(t.id));
 

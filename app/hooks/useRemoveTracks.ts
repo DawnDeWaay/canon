@@ -2,6 +2,19 @@
 
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
+export class RemoveTracksError extends Error {
+  status: number;
+  code: string;
+  detail: string;
+  constructor(status: number, code: string, detail: string) {
+    super(`Remove failed (${status}): ${code}`);
+    this.name = 'RemoveTracksError';
+    this.status = status;
+    this.code = code;
+    this.detail = detail;
+  }
+}
+
 async function removeTracks(playlistId: string, trackIds: string[]): Promise<number> {
   const res = await fetch(`/api/spotify/playlists/${encodeURIComponent(playlistId)}`, {
     method: 'DELETE',
@@ -10,8 +23,16 @@ async function removeTracks(playlistId: string, trackIds: string[]): Promise<num
     body: JSON.stringify({ tracks: trackIds }),
   });
   if (!res.ok) {
-    const detail = await res.text().catch(() => '');
-    throw new Error(`Remove failed (${res.status}): ${detail}`);
+    let code = 'unknown';
+    let detail = '';
+    try {
+      const body = (await res.json()) as { error?: string; detail?: string };
+      code = body.error ?? 'unknown';
+      detail = body.detail ?? '';
+    } catch {
+      // Non-JSON response — nothing more to surface.
+    }
+    throw new RemoveTracksError(res.status, code, detail);
   }
   const data = (await res.json()) as { removed: number };
   return data.removed;
@@ -22,8 +43,6 @@ export function useRemoveTracks(playlistId: string) {
   return useMutation({
     mutationFn: (trackIds: string[]) => removeTracks(playlistId, trackIds),
     onSuccess: () => {
-      // Invalidate the cached playlist detail + summary list so a refetch
-      // reflects the newly-shorter track list.
       qc.invalidateQueries({ queryKey: ['spotify', 'playlist', playlistId] });
       qc.invalidateQueries({ queryKey: ['spotify', 'playlists'] });
     },
