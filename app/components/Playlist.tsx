@@ -111,7 +111,7 @@ const Playlist = ({ id, setMode }: { id: string; setMode: (mode: Mode) => void }
       >
         {playlist?.title}
       </motion.div>
-      <div className='relative w-full my-6'>
+      <div className='relative w-full h-96 my-6'>
         {playlist?.tracks.map((track, index) => {
           const visibleDepth = 3;
           const offset = index - topIndex;

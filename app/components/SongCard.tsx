@@ -11,7 +11,7 @@ const SongCard = ({ name, art, artist }: { name: string; art: string; artist: st
       <div className='relative w-80 aspect-square rounded-xl overflow-hidden'>
         {art ? <Image src={art} alt={name ?? ''} fill className='object-cover' /> : null}
       </div>
-      <div className='flex flex-col items-start justify-start w-full gap-1 mb-2'>
+      <div className='flex flex-col items-start justify-start w-full mb-2'>
         <div className='text-white font-CircularBold text-lg mt-4 w-full text-start'>{name}</div>
         <div className='text-gray-400 text-sm mt-1 w-full text-start'>{artist.join(', ')}</div>
       </div>
