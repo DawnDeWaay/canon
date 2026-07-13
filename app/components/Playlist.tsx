@@ -111,7 +111,7 @@ const Playlist = ({ id, setMode }: { id: string; setMode: (mode: Mode) => void }
       >
         {playlist?.title}
       </motion.div>
-      <div className='relative h-96 w-full my-6'>
+      <div className='relative w-full my-6'>
         {playlist?.tracks.map((track, index) => {
           const visibleDepth = 3;
           const offset = index - topIndex;
@@ -175,7 +175,10 @@ const Playlist = ({ id, setMode }: { id: string; setMode: (mode: Mode) => void }
       <div className='w-full flex justify-center items-center mt-2'>
         <div
           className='text-sm text-gray-500 hover:underline cursor-pointer'
-          onClick={() => setMode('playlists')}
+          onClick={() => {
+            setColor('#1DB954');
+            setMode('playlists');
+          }}
         >
           ← Back
         </div>
