@@ -3,6 +3,7 @@ import { CircularProgress } from '@mui/material';
 import { motion } from 'motion/react';
 import Image from 'next/image';
 import { useColor } from '../context/ColorContext';
+import { useMe } from '../hooks/useMe';
 import { usePlaylist } from '../hooks/usePlaylist';
 import { RemoveTracksError, useRemoveTracks } from '../hooks/useRemoveTracks';
 import type { Mode } from '../page';
@@ -12,26 +13,27 @@ type SummaryMode = Extract<Mode, { type: 'summary' }>;
 const Summary = ({ mode, setMode }: { mode: SummaryMode; setMode: (mode: Mode) => void }) => {
   const { color, setColor } = useColor();
   const { data: playlist, isLoading } = usePlaylist(mode.playlistId);
+  const { data: me } = useMe();
   const { mutate: removeTracks, isPending, isError, error } = useRemoveTracks(mode.playlistId);
 
-  // A 403 from Spotify's DELETE endpoint almost always means the current
-  // access token was issued before we added the `playlist-modify-*` scopes.
-  // Re-authing forces Spotify to re-consent and mint a token with the new
-  // scopes attached.
-  const needsReauth = error instanceof RemoveTracksError && error.status === 403;
-  const notOwner =
-    error instanceof RemoveTracksError && error.detail.toLowerCase().includes('not the owner');
+  // Spotify only lets you delete tracks from playlists you own (or
+  // collaborate on). Playlists you merely follow — including editorial and
+  // algorithmic ones — will 403 the DELETE endpoint even with the modify
+  // scopes granted. Detect this up front so we can disable the action and
+  // explain instead of firing a request that's guaranteed to fail.
+  const isOwner = Boolean(me?.id && playlist?.ownerId && me.id === playlist.ownerId);
 
-  const reauth = async () => {
-    try {
-      await fetch('/api/auth/logout', { method: 'POST', credentials: 'include' });
-    } catch {
-      // Even if logout fails, the redirect below will trigger a fresh consent
-      // via `show_dialog=true`, so ignore the error.
-    }
-    const returnTo = encodeURIComponent(window.location.pathname);
-    window.location.href = `/api/auth/login?returnTo=${returnTo}`;
-  };
+  const spotifyDetail =
+    error instanceof RemoveTracksError && error.detail
+      ? (() => {
+          try {
+            const parsed = JSON.parse(error.detail) as { error?: { message?: string } };
+            return parsed.error?.message ?? error.detail;
+          } catch {
+            return error.detail;
+          }
+        })()
+      : '';
 
   const discardedSet = new Set(mode.tracks);
   const discardedTracks = (playlist?.tracks ?? []).filter((t) => discardedSet.has(t.id));
@@ -71,6 +73,21 @@ const Summary = ({ mode, setMode }: { mode: SummaryMode; setMode: (mode: Mode) =
           : `Removing ${discardedTracks.length} track${discardedTracks.length === 1 ? '' : 's'} from ${playlist?.title ?? 'this playlist'}.`}
       </div>
 
+      {!isLoading && playlist && !isOwner && discardedTracks.length > 0 ? (
+        <div className='w-full max-w-md mb-4 rounded-xl bg-yellow-950/40 border border-yellow-700/50 text-yellow-200 text-sm p-3'>
+          You don&apos;t own <span className='font-CircularBold'>{playlist.title}</span>
+          {playlist.owner ? ` (owned by ${playlist.owner})` : ''}. Spotify only lets you remove
+          tracks from playlists you own or collaborate on — archive to a new playlist instead.
+        </div>
+      ) : null}
+
+      {isError && error instanceof RemoveTracksError ? (
+        <div className='w-full max-w-md mb-4 rounded-xl bg-red-950/40 border border-red-700/50 text-red-200 text-sm p-3'>
+          <span className='font-CircularBold'>Spotify rejected the delete ({error.status}).</span>
+          {spotifyDetail ? <div className='mt-1 opacity-80'>{spotifyDetail}</div> : null}
+        </div>
+      ) : null}
+
       {isLoading ? (
         <div className='w-full flex items-center justify-center py-8 text-white'>
           <CircularProgress size='large' color='inherit' />
@@ -102,7 +119,7 @@ const Summary = ({ mode, setMode }: { mode: SummaryMode; setMode: (mode: Mode) =
       <div className='flex flex-row gap-2 justify-center'>
         <motion.button
           type='button'
-          disabled={isPending}
+          disabled={isPending || (discardedTracks.length > 0 && !isOwner)}
           className='cursor-pointer text-white px-4 py-2 mt-4 rounded-xl flex items-center gap-2 text-center disabled:opacity-60 disabled:cursor-not-allowed'
           whileTap={{ scale: isPending ? 1 : 0.98 }}
           initial={false}

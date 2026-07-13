@@ -72,6 +72,7 @@ export type PlaylistDetail = {
   description: string;
   art: string;
   owner: string;
+  ownerId: string;
   followers: number;
   tracks: PlaylistTrack[];
 };
@@ -165,6 +166,7 @@ export async function GET(_req: Request, ctx: { params: Promise<{ id: string }> 
       description: head.description ?? '',
       art: head.images?.[0]?.url ?? '',
       owner: head.owner?.display_name ?? head.owner?.id ?? '',
+      ownerId: head.owner?.id ?? '',
       followers: head.followers?.total ?? 0,
       tracks: items
         .map((item) => {
