@@ -25,7 +25,7 @@ const Playlists = ({
           <motion.div
             key={playlist.id}
             initial={{ opacity: 0 }}
-            animate={{ opacity: 1, transition: { delay: index * 0.08, duration: 0.8 } }}
+            animate={{ opacity: 1, transition: { delay: index * 0.1, duration: 0.8 } }}
             exit={{ opacity: 0 }}
           >
             <PlaylistCard
