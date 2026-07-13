@@ -42,6 +42,11 @@ export async function GET(request: Request) {
   authorizeUrl.searchParams.set('state', state);
   authorizeUrl.searchParams.set('code_challenge_method', 'S256');
   authorizeUrl.searchParams.set('code_challenge', challenge);
+  // Force Spotify to show the auth dialog instead of silently re-approving
+  // the still-signed-in spotify.com session. Without this, "Log Out → Sign In"
+  // instantly returns the same account because the spotify.com cookie is
+  // untouched by our own cookie clearing.
+  authorizeUrl.searchParams.set('show_dialog', 'true');
 
   return NextResponse.redirect(authorizeUrl);
 }

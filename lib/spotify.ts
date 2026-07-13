@@ -67,7 +67,6 @@ type TokenResponse = {
   scope: string;
 };
 
-/** Exchange an auth code (+ PKCE verifier) for tokens. */
 export async function exchangeCode(code: string, verifier: string): Promise<TokenResponse> {
   const { clientId, clientSecret, redirectUri } = getSpotifyEnv();
   const body = new URLSearchParams({
@@ -81,7 +80,6 @@ export async function exchangeCode(code: string, verifier: string): Promise<Toke
     method: 'POST',
     headers: {
       'Content-Type': 'application/x-www-form-urlencoded',
-      // Spotify accepts Basic auth in addition to client_id in body; required for confidential apps.
       Authorization: `Basic ${Buffer.from(`${clientId}:${clientSecret}`).toString('base64')}`,
     },
     body,
@@ -93,7 +91,6 @@ export async function exchangeCode(code: string, verifier: string): Promise<Toke
   return res.json();
 }
 
-/** Refresh an access token using the stored refresh_token. */
 export async function refreshTokens(refreshToken: string): Promise<TokenResponse> {
   const { clientId, clientSecret } = getSpotifyEnv();
   const body = new URLSearchParams({
@@ -118,7 +115,6 @@ export async function refreshTokens(refreshToken: string): Promise<TokenResponse
 
 const isProd = process.env.NODE_ENV === 'production';
 
-/** Persist tokens to httpOnly cookies. Access cookie is scoped to /, refresh to /api/auth. */
 export async function setTokenCookies(tokens: TokenResponse, existingRefresh?: string) {
   const jar = await cookies();
   const expiresAt = Date.now() + tokens.expires_in * 1000;
@@ -130,7 +126,6 @@ export async function setTokenCookies(tokens: TokenResponse, existingRefresh?: s
     path: '/',
     maxAge: tokens.expires_in,
   });
-  // Non-httpOnly hint so the client can know *when* to re-fetch /me, without exposing the token.
   jar.set(COOKIE.expiresAt, String(expiresAt), {
     httpOnly: false,
     secure: isProd,
@@ -145,9 +140,7 @@ export async function setTokenCookies(tokens: TokenResponse, existingRefresh?: s
       httpOnly: true,
       secure: isProd,
       sameSite: 'lax',
-      // Must be '/' so it's sent to /api/spotify/* routes that need to refresh.
       path: '/',
-      // Refresh tokens don't expire on Spotify — persist ~30 days rolling.
       maxAge: 60 * 60 * 24 * 30,
     });
   }
@@ -155,9 +148,10 @@ export async function setTokenCookies(tokens: TokenResponse, existingRefresh?: s
 
 export async function clearAuthCookies() {
   const jar = await cookies();
-  // Clear at every path we've ever written these cookies at. Cookies are keyed by
-  // name+domain+path, so a stale cookie at '/api/auth' from a previous version of
-  // this app would silently keep the user "signed in" via refresh if not cleared here.
+  // Clear at every path we've ever written these cookies at. Cookies are keyed
+  // by name+domain+path, so a stale cookie at '/api/auth' from a previous
+  // version of this app would silently keep the user "signed in" via refresh
+  // if not cleared here.
   const paths = ['/', '/api/auth'];
   const names = [
     COOKIE.access,
@@ -169,14 +163,19 @@ export async function clearAuthCookies() {
   ];
   for (const name of names) {
     for (const path of paths) {
-      jar.set(name, '', { path, maxAge: 0 });
+      jar.set(name, '', {
+        path,
+        maxAge: 0,
+        expires: new Date(0),
+        httpOnly: true,
+        secure: isProd,
+        sameSite: 'lax',
+      });
     }
+    jar.delete(name);
   }
 }
 
-/**
- * Get a valid access token, refreshing if expired. Returns null if the user isn't signed in.
- */
 export async function getValidAccessToken(): Promise<string | null> {
   const jar = await cookies();
   const access = jar.get(COOKIE.access)?.value;
@@ -195,7 +194,6 @@ export async function getValidAccessToken(): Promise<string | null> {
   }
 }
 
-/** Authenticated call to the Spotify Web API. */
 export async function spotifyFetch(path: string, init: RequestInit = {}): Promise<Response> {
   const token = await getValidAccessToken();
   if (!token) throw new Error('Not authenticated');
