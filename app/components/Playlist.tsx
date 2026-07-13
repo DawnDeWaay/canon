@@ -7,6 +7,7 @@ import { motion } from 'motion/react';
 import { useEffect, useRef, useState } from 'react';
 import { useColor } from '../context/ColorContext';
 import { usePlaylist } from '../hooks/usePlaylist';
+import { usePreview } from '../hooks/usePreview';
 import type { Mode } from '../page';
 import SongCard from './SongCard';
 
@@ -44,11 +45,9 @@ const Playlist = ({ id, setMode }: { id: string; setMode: (mode: Mode) => void }
     }
   }, [pressed, playlist?.tracks.length]);
 
-  // Play the current top track's 30s preview. Spotify deprecated preview_url
-  // for many third-party apps in late 2024, so this will silently no-op
-  // (previewUrl === null) for most tracks unless your app has access.
   const topTrack = playlist?.tracks[topIndex];
-  const previewUrl = topTrack?.previewUrl ?? null;
+  const { data: itunesPreviewUrl } = usePreview(topTrack);
+  const previewUrl = topTrack?.previewUrl ?? itunesPreviewUrl ?? null;
   useEffect(() => {
     const audio = audioRef.current;
     if (!audio) return;
@@ -60,12 +59,9 @@ const Playlist = ({ id, setMode }: { id: string; setMode: (mode: Mode) => void }
     }
     audio.src = previewUrl;
     audio.currentTime = 0;
-    // play() rejects if the user hasn't interacted with the page yet
-    // (browser autoplay policy). Swallow that so it doesn't spam the console.
     audio.play().catch(() => {});
   }, [previewUrl]);
 
-  // Extract the dominant color from the current top track's album art.
   const albumArt = playlist?.tracks[topIndex]?.albumArt;
   useEffect(() => {
     if (!albumArt) return;
@@ -218,7 +214,6 @@ const Playlist = ({ id, setMode }: { id: string; setMode: (mode: Mode) => void }
           ← Back
         </div>
       </div>
-      {/* biome-ignore lint/a11y/useMediaCaption: 30s preview has no captions */}
       <audio ref={audioRef} preload='auto' />
     </motion.div>
   );

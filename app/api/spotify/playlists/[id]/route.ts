@@ -18,6 +18,7 @@ type SpotifyTrack = {
   uri: string;
   preview_url: string | null;
   explicit: boolean;
+  external_ids?: { isrc?: string | null };
 };
 
 type SpotifyPlaylistItem = {
@@ -60,6 +61,7 @@ export type PlaylistTrack = {
   durationMs: number;
   uri: string;
   previewUrl: string | null;
+  isrc: string | null;
   addedAt: string | null;
   isLocal: boolean;
 };
@@ -91,6 +93,7 @@ function normalizeTrack(item: SpotifyPlaylistItem): PlaylistTrack | null {
     durationMs: typeof t.duration_ms === 'number' ? t.duration_ms : 0,
     uri: t.uri ?? '',
     previewUrl: t.preview_url ?? null,
+    isrc: t.external_ids?.isrc ?? null,
     addedAt: item.added_at,
     isLocal: item.is_local ?? false,
   };
