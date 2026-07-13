@@ -91,14 +91,20 @@ export async function GET(_req: Request, ctx: { params: Promise<{ id: string }> 
   try {
     // 1. Playlist header + first page of tracks.
     const headRes = await spotifyFetch(`/playlists/${encodeURIComponent(id)}`);
-    if (headRes.status === 401) {
-      return NextResponse.json({ error: 'unauthorized' }, { status: 401 });
-    }
-    if (headRes.status === 404) {
-      return NextResponse.json({ error: 'not_found' }, { status: 404 });
-    }
     if (!headRes.ok) {
-      return NextResponse.json({ error: 'spotify_error' }, { status: headRes.status });
+      // Spotify deprecated third-party access to editorial/algorithmic
+      // playlists (Discover Weekly, Daily Mix, Release Radar, "This Is…",
+      // etc.) on 2024-11-27 — those now 404 here even though they appear in
+      // `/me/playlists`. Log the body so failures are debuggable.
+      const body = await headRes.text().catch(() => '');
+      console.error(`Spotify /playlists/${id} ${headRes.status}: ${body}`);
+      const code =
+        headRes.status === 401
+          ? 'unauthorized'
+          : headRes.status === 404
+            ? 'not_found'
+            : 'spotify_error';
+      return NextResponse.json({ error: code, detail: body }, { status: headRes.status });
     }
     const head = (await headRes.json()) as SpotifyPlaylistFull;
 
@@ -110,7 +116,9 @@ export async function GET(_req: Request, ctx: { params: Promise<{ id: string }> 
       const path = nextUrl.startsWith(API_PREFIX) ? nextUrl.slice(API_PREFIX.length) : nextUrl;
       const res = await spotifyFetch(path);
       if (!res.ok) {
-        return NextResponse.json({ error: 'spotify_error' }, { status: res.status });
+        const body = await res.text().catch(() => '');
+        console.error(`Spotify tracks page ${res.status}: ${body}`);
+        return NextResponse.json({ error: 'spotify_error', detail: body }, { status: res.status });
       }
       const page = (await res.json()) as SpotifyTracksPage;
       items.push(...page.items);
@@ -128,7 +136,8 @@ export async function GET(_req: Request, ctx: { params: Promise<{ id: string }> 
     };
 
     return NextResponse.json({ playlist });
-  } catch {
-    return NextResponse.json({ error: 'unauthorized' }, { status: 401 });
+  } catch (err) {
+    console.error('playlist route error', err);
+    return NextResponse.json({ error: 'server_error' }, { status: 500 });
   }
 }
