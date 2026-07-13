@@ -8,7 +8,7 @@ const SongCard = ({ name, art, artist }: { name: string; art: string; artist: st
       initial={false}
       animate={{ backgroundColor: '#121212' }}
     >
-      <div className='relative w-80 aspect-square shrink-0 rounded-xl overflow-hidden'>
+      <div className='relative w-80 aspect-square rounded-xl overflow-hidden'>
         {art ? <Image src={art} alt={name ?? ''} fill className='object-cover' /> : null}
       </div>
       <div className='flex flex-col items-start justify-start w-full mb-2'>
