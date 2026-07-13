@@ -228,7 +228,7 @@ const Playlist = ({ id, setMode }: { id: string; setMode: (mode: Mode) => void }
           initial={false}
           animate={{ opacity: 0.9, backgroundColor: '#121212' }}
         >
-          Keep
+          Discard
           <ArrowBack color='inherit' />
         </motion.div>
         <motion.div
@@ -253,7 +253,7 @@ const Playlist = ({ id, setMode }: { id: string; setMode: (mode: Mode) => void }
           animate={{ opacity: 0.9, backgroundColor: '#121212' }}
         >
           <ArrowForward color='inherit' />
-          Discard
+          Keep
         </motion.div>
       </div>
       <div className='w-full flex justify-center items-center mt-2'>
@@ -264,7 +264,7 @@ const Playlist = ({ id, setMode }: { id: string; setMode: (mode: Mode) => void }
             setMode('playlists');
           }}
         >
-          ← Back
+          {'← Back'}
         </div>
       </div>
       {/* biome-ignore lint/a11y/useMediaCaption: 30s preview has no captions */}
