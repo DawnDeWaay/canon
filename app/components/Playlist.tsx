@@ -172,8 +172,13 @@ const Playlist = ({ id, setMode }: { id: string; setMode: (mode: Mode) => void }
           </motion.span>
         </motion.div>
       </div>
-      <div className='text-sm text-gray-500' onClick={() => setMode('playlists')}>
-        ← Back
+      <div className='w-full flex justify-center items-center mt-2'>
+        <div
+          className='text-sm text-gray-500 hover:underline cursor-pointer'
+          onClick={() => setMode('playlists')}
+        >
+          ← Back
+        </div>
       </div>
     </motion.div>
   );
