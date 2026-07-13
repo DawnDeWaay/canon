@@ -111,8 +111,9 @@ export async function GET(_req: Request, ctx: { params: Promise<{ id: string }> 
     const head = (await headRes.json()) as SpotifyPlaylistFull;
 
     // Some playlists (editorial, restricted, or malformed responses) come back
-    // without an embedded `tracks` page. Fall back to the dedicated tracks
-    // endpoint so we still return real tracks instead of an empty list.
+    // without an embedded `tracks` page. Try the dedicated tracks endpoint as
+    // a fallback, but treat failures there as "no tracks available" rather
+    // than failing the whole request — the header + art are still useful.
     const headTracks = head.tracks;
     const items: SpotifyPlaylistItem[] = Array.isArray(headTracks?.items)
       ? [...headTracks.items]
@@ -122,7 +123,6 @@ export async function GET(_req: Request, ctx: { params: Promise<{ id: string }> 
       (items.length === 0
         ? `${API_PREFIX}/playlists/${encodeURIComponent(id)}/tracks?limit=100`
         : null);
-
     // 2. Follow `next` until we've drained every track page.
     while (nextUrl) {
       const path = nextUrl.startsWith(API_PREFIX) ? nextUrl.slice(API_PREFIX.length) : nextUrl;
@@ -130,7 +130,11 @@ export async function GET(_req: Request, ctx: { params: Promise<{ id: string }> 
       if (!res.ok) {
         const body = await res.text().catch(() => '');
         console.error(`Spotify tracks page ${res.status}: ${body}`);
-        return NextResponse.json({ error: 'spotify_error', detail: body }, { status: res.status });
+        // Spotify frequently 403s the /tracks endpoint for playlists whose
+        // header GET succeeded (editorial content, stale scope on the token,
+        // etc.). Rather than 500 the whole request, stop paginating and
+        // return whatever tracks we've already collected.
+        break;
       }
       const page = (await res.json()) as SpotifyTracksPage;
       if (Array.isArray(page?.items)) items.push(...page.items);
