@@ -63,12 +63,15 @@ export async function POST(req: Request, ctx: { params: Promise<{ id: string }> 
     // 3. Create the archive playlist. Private so it doesn't clutter the
     //    user's public profile. Spotify does not require unique names, so
     //    a fresh playlist is created per archive action (matches user intent
-    //    of "generate a new playlist").
+    //    of "generate a new playlist"). Name is suffixed with today's date
+    //    (YYYY-MM-DD, server locale) so successive archives are easy to
+    //    distinguish in the user's library.
+    const today = new Date().toISOString().slice(0, 10);
     const createRes = await spotifyFetch(`/users/${encodeURIComponent(me.id)}/playlists`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        name: 'Canon Archive',
+        name: `Canon Archive ${today}`,
         description: sourceName
           ? `Tracks removed from ${sourceName} via Canon.`
           : 'Tracks removed via Canon.',

@@ -3,6 +3,7 @@ import { CircularProgress } from '@mui/material';
 import { motion } from 'motion/react';
 import Image from 'next/image';
 import { useColor } from '../context/ColorContext';
+import { ArchiveTracksError, useArchiveTracks } from '../hooks/useArchiveTracks';
 import { useMe } from '../hooks/useMe';
 import { usePlaylist } from '../hooks/usePlaylist';
 import { RemoveTracksError, useRemoveTracks } from '../hooks/useRemoveTracks';
@@ -15,6 +16,12 @@ const Summary = ({ mode, setMode }: { mode: SummaryMode; setMode: (mode: Mode) =
   const { data: playlist, isLoading } = usePlaylist(mode.playlistId);
   const { data: me } = useMe();
   const { mutate: removeTracks, isPending, isError, error } = useRemoveTracks(mode.playlistId);
+  const {
+    mutate: archiveTracks,
+    isPending: isArchiving,
+    isError: isArchiveError,
+    error: archiveError,
+  } = useArchiveTracks(mode.playlistId);
 
   // Spotify only lets you delete tracks from playlists you own (or
   // collaborate on). Playlists you merely follow — including editorial and
@@ -23,17 +30,20 @@ const Summary = ({ mode, setMode }: { mode: SummaryMode; setMode: (mode: Mode) =
   // explain instead of firing a request that's guaranteed to fail.
   const isOwner = Boolean(me?.id && playlist?.ownerId && me.id === playlist.ownerId);
 
-  const spotifyDetail =
-    error instanceof RemoveTracksError && error.detail
-      ? (() => {
-          try {
-            const parsed = JSON.parse(error.detail) as { error?: { message?: string } };
-            return parsed.error?.message ?? error.detail;
-          } catch {
-            return error.detail;
-          }
-        })()
-      : '';
+  const parseSpotifyDetail = (raw: string): string => {
+    if (!raw) return '';
+    try {
+      const parsed = JSON.parse(raw) as { error?: { message?: string } };
+      return parsed.error?.message ?? raw;
+    } catch {
+      return raw;
+    }
+  };
+  const spotifyDetail = error instanceof RemoveTracksError ? parseSpotifyDetail(error.detail) : '';
+  const archiveDetail =
+    archiveError instanceof ArchiveTracksError ? parseSpotifyDetail(archiveError.detail) : '';
+
+  const busy = isPending || isArchiving;
 
   const discardedSet = new Set(mode.tracks);
   const discardedTracks = (playlist?.tracks ?? []).filter((t) => discardedSet.has(t.id));
@@ -45,6 +55,20 @@ const Summary = ({ mode, setMode }: { mode: SummaryMode; setMode: (mode: Mode) =
       return;
     }
     removeTracks(mode.tracks, {
+      onSuccess: () => {
+        setColor('#1DB954');
+        setMode('playlists');
+      },
+    });
+  };
+
+  const handleArchive = () => {
+    if (mode.tracks.length === 0) {
+      setColor('#1DB954');
+      setMode('playlists');
+      return;
+    }
+    archiveTracks(mode.tracks, {
       onSuccess: () => {
         setColor('#1DB954');
         setMode('playlists');
@@ -88,6 +112,13 @@ const Summary = ({ mode, setMode }: { mode: SummaryMode; setMode: (mode: Mode) =
         </div>
       ) : null}
 
+      {isArchiveError && archiveError instanceof ArchiveTracksError ? (
+        <div className='w-full max-w-md mb-4 rounded-xl bg-red-950/40 border border-red-700/50 text-red-200 text-sm p-3'>
+          <span className='font-CircularBold'>Archive failed ({archiveError.status}).</span>
+          {archiveDetail ? <div className='mt-1 opacity-80'>{archiveDetail}</div> : null}
+        </div>
+      ) : null}
+
       {isLoading ? (
         <div className='w-full flex items-center justify-center py-8 text-white'>
           <CircularProgress size='large' color='inherit' />
@@ -119,9 +150,9 @@ const Summary = ({ mode, setMode }: { mode: SummaryMode; setMode: (mode: Mode) =
       <div className='flex flex-row gap-2 justify-center'>
         <motion.button
           type='button'
-          disabled={isPending || (discardedTracks.length > 0 && !isOwner)}
+          disabled={busy || (discardedTracks.length > 0 && !isOwner)}
           className='cursor-pointer text-white px-4 py-2 mt-4 rounded-xl flex items-center gap-2 text-center disabled:opacity-60 disabled:cursor-not-allowed'
-          whileTap={{ scale: isPending ? 1 : 0.98 }}
+          whileTap={{ scale: busy ? 1 : 0.98 }}
           initial={false}
           animate={{
             backgroundColor: color,
@@ -136,9 +167,9 @@ const Summary = ({ mode, setMode }: { mode: SummaryMode; setMode: (mode: Mode) =
         </motion.button>
         <motion.button
           type='button'
-          disabled={isPending}
+          disabled={busy}
           className='cursor-pointer text-white px-4 py-2 mt-4 rounded-xl flex items-center gap-2 text-center disabled:opacity-60 disabled:cursor-not-allowed'
-          whileTap={{ scale: isPending ? 1 : 0.98 }}
+          whileTap={{ scale: busy ? 1 : 0.98 }}
           initial={false}
           animate={{
             backgroundColor: color,
@@ -146,10 +177,10 @@ const Summary = ({ mode, setMode }: { mode: SummaryMode; setMode: (mode: Mode) =
             transition: { delay: 0.3, duration: 0.8 },
           }}
           exit={{ opacity: 0 }}
-          onClick={handleSave}
+          onClick={handleArchive}
         >
-          {isPending
-            ? 'Removing…'
+          {isArchiving
+            ? 'Archiving…'
             : discardedTracks.length === 0
               ? 'Done'
               : 'Remove & Archive to New Playlist'}
