@@ -208,7 +208,7 @@ const Playlist = ({ id, setMode }: { id: string; setMode: (mode: Mode) => void }
       </div>
       <div className='flex flex-row justify-center items-start gap-2'>
         <motion.div
-          className='p-2 flex flex-row gap-1 justify-center items-center rounded-xl cursor-pointer w-25'
+          className='p-2 flex flex-row gap-1 justify-center items-center rounded-xl cursor-pointer w-26'
           initial={false}
           animate={{ opacity: 0.9, backgroundColor: '#121212' }}
         >
@@ -232,7 +232,7 @@ const Playlist = ({ id, setMode }: { id: string; setMode: (mode: Mode) => void }
           )}
         </motion.div>
         <motion.div
-          className='p-2 flex flex-row justify-center items-center gap-1 rounded-xl cursor-pointer w-25'
+          className='p-2 flex flex-row justify-center items-center gap-1 rounded-xl cursor-pointer w-26'
           initial={false}
           animate={{ opacity: 0.9, backgroundColor: '#121212' }}
         >
