@@ -102,7 +102,12 @@ const Playlist = ({ id, setMode }: { id: string; setMode: (mode: Mode) => void }
   const transition = { type: 'spring' as const, stiffness: 500, damping: 25 };
 
   return (
-    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className='w-full flex flex-col items-center justify-center'
+    >
       <motion.div
         className='font-CircularBold text-3xl font-bold w-full text-center'
         initial={{ opacity: 0 }}
