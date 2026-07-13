@@ -131,7 +131,7 @@ const Playlist = ({ id, setMode }: { id: string; setMode: (mode: Mode) => void }
               }}
               transition={{ type: 'spring', stiffness: 300, damping: 30 }}
             >
-              <SongCard name={track.name} art={track.albumArt} />
+              <SongCard name={track.name} art={track.albumArt} artist={track.artists} />
             </motion.div>
           );
         })}
