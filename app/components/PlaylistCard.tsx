@@ -21,7 +21,7 @@ const PlaylistCard = ({
       onClick={() => setMode({ type: 'playlist', id: id })}
     >
       <motion.div
-        className='flex flex-row items-center justify-between w-full h-full gap-2'
+        className='flex flex-row items-center justify-between w-full h-full gap-4'
         animate={{ padding: '0.75rem 0.75rem' }}
         whileHover={{ padding: '1rem 0.75rem' }}
       >
