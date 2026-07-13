@@ -10,7 +10,7 @@ const SongCard = ({ name, art }: { name: string; art: string }) => {
     >
       <div className='relative w-64 aspect-square rounded-xl overflow-hidden'>
         {art ? (
-          <Image src={art} alt={name ?? ''} fill sizes='256px' className='object-cover' />
+          <Image src={art} alt={name ?? ''} fill  className='object-cover' />
         ) : null}
       </div>
       <div className='text-white font-CircularBold text-lg mt-4'>{name}</div>
