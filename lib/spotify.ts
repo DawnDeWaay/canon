@@ -155,8 +155,22 @@ export async function setTokenCookies(tokens: TokenResponse, existingRefresh?: s
 
 export async function clearAuthCookies() {
   const jar = await cookies();
-  for (const name of [COOKIE.access, COOKIE.refresh, COOKIE.expiresAt]) {
-    jar.set(name, '', { path: '/', maxAge: 0 });
+  // Clear at every path we've ever written these cookies at. Cookies are keyed by
+  // name+domain+path, so a stale cookie at '/api/auth' from a previous version of
+  // this app would silently keep the user "signed in" via refresh if not cleared here.
+  const paths = ['/', '/api/auth'];
+  const names = [
+    COOKIE.access,
+    COOKIE.refresh,
+    COOKIE.expiresAt,
+    COOKIE.verifier,
+    COOKIE.state,
+    COOKIE.returnTo,
+  ];
+  for (const name of names) {
+    for (const path of paths) {
+      jar.set(name, '', { path, maxAge: 0 });
+    }
   }
 }
 
