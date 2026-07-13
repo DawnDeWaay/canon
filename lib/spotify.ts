@@ -7,6 +7,7 @@ export const COOKIE = {
   access: 'sp_access_token',
   refresh: 'sp_refresh_token',
   expiresAt: 'sp_expires_at',
+  scope: 'sp_scope',
   verifier: 'sp_pkce_verifier',
   state: 'sp_oauth_state',
   returnTo: 'sp_return_to',
@@ -133,6 +134,17 @@ export async function setTokenCookies(tokens: TokenResponse, existingRefresh?: s
     path: '/',
     maxAge: tokens.expires_in,
   });
+  // Store granted scopes so we can debug whether the token actually has the
+  // permissions we asked for.
+  if (tokens.scope) {
+    jar.set(COOKIE.scope, tokens.scope, {
+      httpOnly: false,
+      secure: isProd,
+      sameSite: 'lax',
+      path: '/',
+      maxAge: tokens.expires_in,
+    });
+  }
 
   const refresh = tokens.refresh_token ?? existingRefresh;
   if (refresh) {
@@ -157,6 +169,7 @@ export async function clearAuthCookies() {
     COOKIE.access,
     COOKIE.refresh,
     COOKIE.expiresAt,
+    COOKIE.scope,
     COOKIE.verifier,
     COOKIE.state,
     COOKIE.returnTo,

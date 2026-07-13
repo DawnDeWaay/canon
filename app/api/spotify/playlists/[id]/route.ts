@@ -124,6 +124,9 @@ export async function GET(_req: Request, ctx: { params: Promise<{ id: string }> 
           next: headTracks.next,
         }
       : null;
+    // Full key inventory of the head response so we can see if Spotify is
+    // returning a totally stripped-down shape.
+    const headKeys = head ? Object.keys(head) : null;
     const items: SpotifyPlaylistItem[] = Array.isArray(headTracks?.items)
       ? [...headTracks.items]
       : [];
@@ -173,7 +176,7 @@ export async function GET(_req: Request, ctx: { params: Promise<{ id: string }> 
         .filter((t): t is PlaylistTrack => t !== null),
     };
 
-    return NextResponse.json({ playlist, tracksError, headTracksDebug });
+    return NextResponse.json({ playlist, tracksError, headTracksDebug, headKeys });
   } catch (err) {
     console.error('playlist route error', err);
     const message = err instanceof Error ? `${err.name}: ${err.message}` : String(err);
