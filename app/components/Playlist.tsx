@@ -104,6 +104,14 @@ const Playlist = ({ id, setMode }: { id: string; setMode: (mode: Mode) => void }
 
   useEffect(() => {
     const handleDown = (e: KeyboardEvent) => {
+      // Spacebar toggles play/pause. Guarded on previewUrl so we don't flip
+      // the icon while there's nothing to play.
+      if (e.key === ' ' || e.code === 'Space') {
+        e.preventDefault();
+        if (!previewUrl) return;
+        setMusicPlaying((p) => !p);
+        return;
+      }
       const dir = KEY_TO_DIRECTION[e.key];
       if (!dir) return;
       e.preventDefault();
@@ -130,7 +138,7 @@ const Playlist = ({ id, setMode }: { id: string; setMode: (mode: Mode) => void }
       window.removeEventListener('keydown', handleDown);
       window.removeEventListener('keyup', handleUp);
     };
-  }, []);
+  }, [previewUrl]);
 
   const arrowAnim = (dir: Direction) => ({
     color: pressed.has(dir) ? '#ffffff' : '#8a8a8a',
@@ -184,44 +192,6 @@ const Playlist = ({ id, setMode }: { id: string; setMode: (mode: Mode) => void }
           </div>
         </div>
       }
-      <div className='w-full p-2 fixed bottom-0 left-0 flex items-center justify-center'>
-        <div className='w-full flex justify-center items-center'>
-          <motion.div
-            className='p-1 flex flex-row gap-1 rounded-xl'
-            initial={false}
-            animate={{ opacity: 0.9, backgroundColor: '#121212' }}
-          >
-            <motion.span
-              className='flex items-center justify-center p-1 rounded-md'
-              animate={arrowAnim('left')}
-              transition={transition}
-            >
-              <ArrowBack color='inherit' />
-            </motion.span>
-            <motion.span
-              className='flex items-center justify-center p-1 rounded-md'
-              animate={arrowAnim('down')}
-              transition={transition}
-            >
-              <ArrowDownward color='inherit' />
-            </motion.span>
-            <motion.span
-              className='flex items-center justify-center p-1 rounded-md'
-              animate={arrowAnim('up')}
-              transition={transition}
-            >
-              <ArrowUpward color='inherit' />
-            </motion.span>
-            <motion.span
-              className='flex items-center justify-center p-1 rounded-md'
-              animate={arrowAnim('right')}
-              transition={transition}
-            >
-              <ArrowForward color='inherit' />
-            </motion.span>
-          </motion.div>
-        </div>
-      </div>
       <div className='flex flex-row justify-center items-start gap-2'>
         <motion.div
           className='p-2 flex flex-row gap-1 rounded-xl cursor-pointer w-25'
@@ -265,6 +235,44 @@ const Playlist = ({ id, setMode }: { id: string; setMode: (mode: Mode) => void }
           }}
         >
           ← Back
+        </div>
+      </div>
+      <div className='w-full p-2 fixed bottom-0 left-0 flex items-center justify-center'>
+        <div className='w-full flex justify-center items-center'>
+          <motion.div
+            className='p-1 flex flex-row gap-1 rounded-xl'
+            initial={false}
+            animate={{ opacity: 0.9, backgroundColor: '#121212' }}
+          >
+            <motion.span
+              className='flex items-center justify-center p-1 rounded-md'
+              animate={arrowAnim('left')}
+              transition={transition}
+            >
+              <ArrowBack color='inherit' />
+            </motion.span>
+            <motion.span
+              className='flex items-center justify-center p-1 rounded-md'
+              animate={arrowAnim('down')}
+              transition={transition}
+            >
+              <ArrowDownward color='inherit' />
+            </motion.span>
+            <motion.span
+              className='flex items-center justify-center p-1 rounded-md'
+              animate={arrowAnim('up')}
+              transition={transition}
+            >
+              <ArrowUpward color='inherit' />
+            </motion.span>
+            <motion.span
+              className='flex items-center justify-center p-1 rounded-md'
+              animate={arrowAnim('right')}
+              transition={transition}
+            >
+              <ArrowForward color='inherit' />
+            </motion.span>
+          </motion.div>
         </div>
       </div>
       {/* biome-ignore lint/a11y/useMediaCaption: 30s preview has no captions */}
