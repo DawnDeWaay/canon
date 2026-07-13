@@ -9,7 +9,7 @@ import {
   Pause,
   PlayArrow,
 } from '@mui/icons-material';
-import { getColor } from 'colorthief';
+import { getColor, getSwatches } from 'colorthief';
 import { motion } from 'motion/react';
 import { useEffect, useRef, useState } from 'react';
 import { useColor } from '../context/ColorContext';
@@ -17,6 +17,7 @@ import { usePlaylist } from '../hooks/usePlaylist';
 import { usePreview } from '../hooks/usePreview';
 import type { Mode } from '../page';
 import SongCard from './SongCard';
+import { CircularProgress } from '@mui/material';
 
 type Direction = 'left' | 'down' | 'up' | 'right';
 
@@ -86,9 +87,24 @@ const Playlist = ({ id, setMode }: { id: string; setMode: (mode: Mode) => void }
     img.src = albumArt;
     img.onload = async () => {
       try {
-        const color = await getColor(img);
-        if (cancelled || !color) return;
-        setColor(color.hex());
+        const swatches = await getSwatches(img);
+        if (cancelled) return;
+        const preference = [
+          'Vibrant',
+          'LightVibrant',
+          'Muted',
+          'LightMuted',
+          'DarkVibrant',
+          'DarkMuted',
+        ] as const;
+        const picked = preference.map((role) => swatches[role]).find((s) => s != null);
+        if (picked) {
+          setColor(picked.color.hex());
+          return;
+        }
+        const fallback = await getColor(img);
+        if (cancelled || !fallback) return;
+        setColor(fallback.hex());
       } catch {
         setColor('#1DB954');
       }
@@ -100,8 +116,6 @@ const Playlist = ({ id, setMode }: { id: string; setMode: (mode: Mode) => void }
 
   useEffect(() => {
     const handleDown = (e: KeyboardEvent) => {
-      // Spacebar toggles play/pause. Guarded on previewUrl so we don't flip
-      // the icon while there's nothing to play.
       if (e.key === ' ' || e.code === 'Space') {
         e.preventDefault();
         if (!previewUrl) return;
@@ -159,8 +173,8 @@ const Playlist = ({ id, setMode }: { id: string; setMode: (mode: Mode) => void }
           {playlist?.title}
         </motion.div>
       )}
-      {
-        <div className='w-full flex items-center justify-center'>
+      <div className='w-full flex items-center justify-center'>
+        {playlist ? (
           <div className='relative w-88 flex items-center justify-center h-104 my-6'>
             {playlist?.tracks.map((track, index) => {
               const visibleDepth = 3;
@@ -186,8 +200,12 @@ const Playlist = ({ id, setMode }: { id: string; setMode: (mode: Mode) => void }
               );
             })}
           </div>
-        </div>
-      }
+        ) : (
+          <div className='w-full h-104 flex items-center justify-center'>
+            <CircularProgress size='large' />
+          </div>
+        )}
+      </div>
       <div className='flex flex-row justify-center items-start gap-2'>
         <motion.div
           className='p-2 flex flex-row gap-1 justify-center items-center rounded-xl cursor-pointer w-25'
