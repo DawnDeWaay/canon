@@ -6,8 +6,8 @@ import { useColor } from '../context/ColorContext';
 
 const FLIP_DURATION = 1.6; // seconds
 const HOVER_DURATION = 0.2; // seconds
-const COLOR_DURATION = 0.6; // seconds
-const COLOR_MAX_DELAY = 0.6; // seconds
+const COLOR_DURATION = 0.4; // seconds
+const COLOR_MAX_DELAY = 0.4; // seconds
 const MIN_INTERVAL_MS = 10_000;
 const MAX_INTERVAL_MS = 60_000;
 
