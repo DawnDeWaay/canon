@@ -123,6 +123,9 @@ export async function GET(_req: Request, ctx: { params: Promise<{ id: string }> 
       (items.length === 0
         ? `${API_PREFIX}/playlists/${encodeURIComponent(id)}/tracks?limit=100`
         : null);
+    // Track the last failure so we can bubble it back to the client for
+    // debugging when the tracks list ends up empty.
+    let tracksError: { status: number; body: string } | null = null;
     // 2. Follow `next` until we've drained every track page.
     while (nextUrl) {
       const path = nextUrl.startsWith(API_PREFIX) ? nextUrl.slice(API_PREFIX.length) : nextUrl;
@@ -130,6 +133,7 @@ export async function GET(_req: Request, ctx: { params: Promise<{ id: string }> 
       if (!res.ok) {
         const body = await res.text().catch(() => '');
         console.error(`Spotify tracks page ${res.status}: ${body}`);
+        tracksError = { status: res.status, body };
         // Spotify frequently 403s the /tracks endpoint for playlists whose
         // header GET succeeded (editorial content, stale scope on the token,
         // etc.). Rather than 500 the whole request, stop paginating and
@@ -160,7 +164,7 @@ export async function GET(_req: Request, ctx: { params: Promise<{ id: string }> 
         .filter((t): t is PlaylistTrack => t !== null),
     };
 
-    return NextResponse.json({ playlist });
+    return NextResponse.json({ playlist, tracksError });
   } catch (err) {
     console.error('playlist route error', err);
     const message = err instanceof Error ? `${err.name}: ${err.message}` : String(err);
