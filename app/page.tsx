@@ -7,6 +7,7 @@ import Nameplate from './components/Nameplate';
 import Playlist from './components/Playlist';
 import Playlists from './components/Playlists';
 import StarField from './components/StarField';
+import Summary from './components/Summary';
 import { useMe } from './hooks/useMe';
 import { usePlaylists } from './hooks/usePlaylists';
 
@@ -49,6 +50,9 @@ export default function Home() {
               )}
               {mode !== null && typeof mode === 'object' && mode.type === 'playlist' && (
                 <Playlist key='playlist' id={mode.id} setMode={setMode} />
+              )}
+              {mode !== null && typeof mode === 'object' && mode.type === 'summary' && (
+                <Summary key='summary' mode={mode} setMode={setMode} />
               )}
             </AnimatePresence>
             {isError && mode === 'playlists' && (

@@ -59,7 +59,7 @@ const Summary = ({ mode, setMode }: { mode: SummaryMode; setMode: (mode: Mode) =
           <CircularProgress size='large' color='inherit' />
         </div>
       ) : (
-        <div className='flex flex-col gap-2 w-full max-h-[26rem] overflow-y-auto pr-1'>
+        <div className='flex flex-col gap-2 w-full max-h-104 overflow-y-auto pr-1'>
           {discardedTracks.map((track) => (
             <motion.div
               key={track.id}
