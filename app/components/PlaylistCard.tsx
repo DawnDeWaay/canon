@@ -25,7 +25,7 @@ const PlaylistCard = ({
         animate={{ height: '4rem' }}
         whileHover={{ height: '4.5rem' }}
       >
-        <div className='h-3 w-3 relative rounded-md overflow-hidden bg-neutral-800'>
+        <div className='h-12 w-12 relative rounded-md overflow-hidden bg-neutral-800'>
           {art ? (
             <Image src={art} alt={title} height={48} width={48} className='object-cover' />
           ) : null}
