@@ -13,7 +13,7 @@ import {
 import { CircularProgress } from '@mui/material';
 import { getColor, getSwatches } from 'colorthief';
 import { motion } from 'motion/react';
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useColor } from '../context/ColorContext';
 import { usePlaylist } from '../hooks/usePlaylist';
 import { usePreview } from '../hooks/usePreview';
@@ -41,19 +41,46 @@ const Playlist = ({ id, setMode }: { id: string; setMode: (mode: Mode) => void }
   const [pressed, setPressed] = useState<Set<Direction>>(new Set());
   const [topIndex, setTopIndex] = useState(0);
   const [musicPlaying, setMusicPlaying] = useState(false);
+  const [discarded, setDiscarded] = useState<string[]>([]);
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
   const { setColor, color } = useColor();
   const { data: playlist } = usePlaylist(id);
 
+  const totalTracks = playlist?.tracks.length ?? 0;
+
+  const advance = useCallback(() => {
+    setTopIndex((prev) => Math.min(prev + 1, totalTracks));
+  }, [totalTracks]);
+
+  const retreat = useCallback(() => {
+    setTopIndex((prev) => Math.max(prev - 1, 0));
+  }, []);
+
+  const discardCurrent = useCallback(() => {
+    const trackId = playlist?.tracks[topIndex]?.id;
+    if (trackId) {
+      setDiscarded((d) => (d.includes(trackId) ? d : [...d, trackId]));
+    }
+    advance();
+  }, [playlist, topIndex, advance]);
+
+  const keepCurrent = useCallback(() => {
+    advance();
+  }, [advance]);
+
+  const finish = useCallback(() => {
+    setMusicPlaying(false);
+    setColor('#1DB954');
+    setMode({ type: 'summary', playlistId: id, tracks: discarded });
+  }, [discarded, id, setColor, setMode]);
+
+  // Auto-transition to summary once the user has paged past the last track.
   useEffect(() => {
-    if (pressed.has('left')) {
-      setTopIndex((prev) => Math.min(prev + 1, (playlist?.tracks.length ?? 0) - 1));
+    if (totalTracks > 0 && topIndex >= totalTracks) {
+      finish();
     }
-    if (pressed.has('right')) {
-      setTopIndex((prev) => Math.max(prev - 1, 0));
-    }
-  }, [pressed, playlist?.tracks.length]);
+  }, [topIndex, totalTracks, finish]);
 
   const topTrack = playlist?.tracks[topIndex];
   const { data: itunesPreviewUrl } = usePreview(topTrack);
@@ -117,10 +144,13 @@ const Playlist = ({ id, setMode }: { id: string; setMode: (mode: Mode) => void }
 
   useEffect(() => {
     const handleDown = (e: KeyboardEvent) => {
+      // Ignore auto-repeat so holding an arrow doesn't rapid-fire
+      // discard/keep across many tracks.
+      if (e.repeat) return;
+
       if (e.key === ' ' || e.code === 'Space') {
         e.preventDefault();
-        if (!previewUrl) return;
-        setMusicPlaying((p) => !p);
+        if (previewUrl) setMusicPlaying((p) => !p);
         return;
       }
       const dir = KEY_TO_DIRECTION[e.key];
@@ -132,6 +162,22 @@ const Playlist = ({ id, setMode }: { id: string; setMode: (mode: Mode) => void }
         next.add(dir);
         return next;
       });
+      // Left = discard, right = keep (matches on-screen buttons).
+      // Down = skip forward, up = go back — neither records a decision.
+      switch (dir) {
+        case 'left':
+          discardCurrent();
+          break;
+        case 'right':
+          keepCurrent();
+          break;
+        case 'down':
+          advance();
+          break;
+        case 'up':
+          retreat();
+          break;
+      }
     };
     const handleUp = (e: KeyboardEvent) => {
       const dir = KEY_TO_DIRECTION[e.key];
@@ -149,7 +195,7 @@ const Playlist = ({ id, setMode }: { id: string; setMode: (mode: Mode) => void }
       window.removeEventListener('keydown', handleDown);
       window.removeEventListener('keyup', handleUp);
     };
-  }, [previewUrl]);
+  }, [previewUrl, discardCurrent, keepCurrent, advance, retreat]);
 
   const arrowAnim = (dir: Direction) => ({
     color: pressed.has(dir) ? '#ffffff' : '#8a8a8a',
@@ -196,7 +242,12 @@ const Playlist = ({ id, setMode }: { id: string; setMode: (mode: Mode) => void }
                   }}
                   transition={{ type: 'spring', stiffness: 300, damping: 30 }}
                 >
-                  <SongCard name={track.name} art={track.albumArt} artist={track.artists} />
+                  <SongCard
+                    name={track.name}
+                    art={track.albumArt}
+                    artist={track.artists}
+                    removed={discarded.includes(track.id)}
+                  />
                 </motion.div>
               );
             })}
@@ -212,6 +263,7 @@ const Playlist = ({ id, setMode }: { id: string; setMode: (mode: Mode) => void }
           className='p-2 flex flex-row gap-1 justify-center items-center rounded-xl cursor-pointer w-26'
           initial={false}
           animate={{ opacity: 0.9, backgroundColor: '#121212' }}
+          onClick={discardCurrent}
         >
           Discard
           <ArrowBack color='inherit' />
@@ -236,6 +288,7 @@ const Playlist = ({ id, setMode }: { id: string; setMode: (mode: Mode) => void }
           className='p-2 flex flex-row justify-center items-center gap-1 rounded-xl cursor-pointer w-26'
           initial={false}
           animate={{ opacity: 0.9, backgroundColor: '#121212' }}
+          onClick={keepCurrent}
         >
           <ArrowForward color='inherit' />
           Keep
@@ -264,6 +317,7 @@ const Playlist = ({ id, setMode }: { id: string; setMode: (mode: Mode) => void }
             transition: { delay: 0.3, duration: 0.8 },
           }}
           exit={{ opacity: 0 }}
+          onClick={finish}
         >
           Finish
           <DoneAll color='inherit' />

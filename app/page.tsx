@@ -14,7 +14,7 @@ export type Mode =
   | 'splash'
   | 'playlists'
   | { type: 'playlist'; id: string }
-  | { type: 'summary'; tracks: string[] };
+  | { type: 'summary'; playlistId: string; tracks: string[] };
 
 export default function Home() {
   const [mode, setMode] = useState<Mode | null>(null);

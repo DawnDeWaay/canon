@@ -1,13 +1,29 @@
+import { Cancel } from '@mui/icons-material';
 import { motion } from 'motion/react';
 import Image from 'next/image';
 
-const SongCard = ({ name, art, artist }: { name: string; art: string; artist: string[] }) => {
+const SongCard = ({
+  name,
+  art,
+  artist,
+  removed = false,
+}: {
+  name: string;
+  art: string;
+  artist: string[];
+  removed: boolean;
+}) => {
   return (
     <motion.div
-      className='h-104 w-fit p-4 rounded-3xl flex flex-col items-center justify-start'
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1, backgroundColor: '#121212' }}
+      className='h-104 w-fit p-4 rounded-3xl flex flex-col items-center justify-start relative overflow-hidden'
+      initial={{ opacity: 0, scale: 1 }}
+      animate={{ opacity: 1, scale: [1, 1.1, 1], backgroundColor: '#121212' }}
     >
+      {removed && (
+        <motion.div className='absolute top-4 right-4 rotate-18 text-red-500 text-3xl'>
+          <Cancel fontSize='inherit' />
+        </motion.div>
+      )}
       <div className='relative w-80 aspect-square rounded-xl overflow-hidden'>
         {art ? <Image src={art} alt={name ?? ''} fill className='object-cover' /> : null}
       </div>
