@@ -244,6 +244,12 @@ const Playlist = ({ id, setMode }: { id: string; setMode: (mode: Mode) => void }
                     type: 'spring',
                     stiffness: 300,
                     damping: 30,
+                    rotate: {
+                      type: 'spring',
+                      stiffness: 300,
+                      damping: 30,
+                      delay: isPast ? 0.25 : 0,
+                    },
                     x: { type: 'spring', stiffness: 300, damping: 30, delay: isPast ? 0.25 : 0 },
                     y: { type: 'spring', stiffness: 300, damping: 30, delay: isPast ? 0.25 : 0 },
                     opacity: { delay: isPast ? 0.25 : 0 },
