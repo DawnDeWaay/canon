@@ -15,9 +15,9 @@ const PlaylistCard = ({
 }) => {
   return (
     <motion.div
-      className='w-full rounded-lg flex items-center justify-center cursor-pointer'
+      className='greybg w-full rounded-lg flex items-center justify-center cursor-pointer'
       initial={false}
-      animate={{ height: '4.5rem', opacity: 0.9, backgroundColor: '#121212' }}
+      animate={{ height: '4.5rem', opacity: 0.9 }}
       whileHover={{ height: '5rem' }}
       onClick={() => setMode({ type: 'playlist', id })}
     >

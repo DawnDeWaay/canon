@@ -258,9 +258,9 @@ const Playlist = ({ id, setMode }: { id: string; setMode: (mode: Mode) => void }
       </div>
       <div className='flex flex-row justify-center items-start gap-2'>
         <motion.div
-          className='p-2 flex flex-row gap-1 justify-center items-center rounded-xl cursor-pointer w-26'
+          className='greybg p-2 flex flex-row gap-1 justify-center items-center rounded-xl cursor-pointer w-26'
           initial={false}
-          animate={{ opacity: 0.9, backgroundColor: '#121212' }}
+          animate={{ opacity: 0.9 }}
           onClick={discardCurrent}
         >
           Discard
@@ -283,9 +283,9 @@ const Playlist = ({ id, setMode }: { id: string; setMode: (mode: Mode) => void }
           )}
         </motion.div>
         <motion.div
-          className='p-2 flex flex-row justify-center items-center gap-1 rounded-xl cursor-pointer w-26'
+          className='greybg p-2 flex flex-row justify-center items-center gap-1 rounded-xl cursor-pointer w-26'
           initial={false}
-          animate={{ opacity: 0.9, backgroundColor: '#121212' }}
+          animate={{ opacity: 0.9 }}
           onClick={keepCurrent}
         >
           <ArrowForward color='inherit' />
@@ -322,9 +322,9 @@ const Playlist = ({ id, setMode }: { id: string; setMode: (mode: Mode) => void }
         </motion.button>
         <div className='w-full flex justify-center items-center'>
           <motion.div
-            className='p-1 flex flex-row gap-1 rounded-xl'
+            className='greybg p-1 flex flex-row gap-1 rounded-xl'
             initial={false}
-            animate={{ opacity: 0.9, backgroundColor: '#121212' }}
+            animate={{ opacity: 0.9 }}
           >
             <motion.span
               className='flex items-center justify-center p-1 rounded-md'

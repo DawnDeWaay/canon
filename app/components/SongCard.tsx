@@ -15,9 +15,9 @@ const SongCard = ({
 }) => {
   return (
     <motion.div
-      className='h-104 w-fit p-4 rounded-3xl flex flex-col items-center justify-start relative overflow-hidden'
+      className='greybg h-104 w-fit p-4 rounded-3xl flex flex-col items-center justify-start relative overflow-hidden'
       initial={{ opacity: 0 }}
-      animate={{ opacity: 1, backgroundColor: '#121212' }}
+      animate={{ opacity: 1 }}
     >
       {removed && (
         <motion.div

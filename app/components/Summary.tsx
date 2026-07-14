@@ -128,9 +128,9 @@ const Summary = ({ mode, setMode }: { mode: SummaryMode; setMode: (mode: Mode) =
           {discardedTracks.map((track) => (
             <motion.div
               key={track.id}
-              className='flex flex-row items-center gap-3 p-2 rounded-xl'
+              className='greybg flex flex-row items-center gap-3 p-2 rounded-xl'
               initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0, backgroundColor: '#121212' }}
+              animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0 }}
               transition={{ type: 'spring', stiffness: 400, damping: 30 }}
             >

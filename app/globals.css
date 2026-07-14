@@ -6,6 +6,10 @@ html {
   font-family: CircularBook, sans-serif;
 }
 
+.greybg {
+  background-color: #121212;
+}
+
 @font-face {
   font-family: "CircularBook";
   src: url("/fonts/CircularSpotifyText-Book.otf") format("opentype");
