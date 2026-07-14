@@ -10,6 +10,7 @@ import StarField from './components/StarField';
 import Summary from './components/Summary';
 import { useMe } from './hooks/useMe';
 import { usePlaylists } from './hooks/usePlaylists';
+import Attribution from './components/Attribution';
 
 export type Mode =
   | 'splash'
@@ -63,6 +64,7 @@ export default function Home() {
           </div>
         </main>
       </div>
+      <Attribution />
     </>
   );
 }
