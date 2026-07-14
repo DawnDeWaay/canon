@@ -1,4 +1,5 @@
 import { Cancel } from '@mui/icons-material';
+import { Chip } from '@mui/material';
 import { motion } from 'motion/react';
 import Image from 'next/image';
 
@@ -19,15 +20,6 @@ const SongCard = ({
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
     >
-      {removed && (
-        <motion.div
-          className='absolute top-4 right-4 rotate-23 text-red-500 text-3xl'
-          initial={false}
-          animate={{ scale: [1, 0.9, 1] }}
-        >
-          <Cancel fontSize='inherit' />
-        </motion.div>
-      )}
       <div className='relative w-80 aspect-square rounded-xl overflow-hidden'>
         {art ? <Image src={art} alt={name ?? ''} fill className='object-cover' /> : null}
       </div>
@@ -35,6 +27,11 @@ const SongCard = ({
         <div className='text-white font-CircularBold text-lg mt-4 w-full text-start'>{name}</div>
         <div className='text-gray-400 text-sm mt-1 w-full text-start'>{artist.join(', ')}</div>
       </div>
+      {removed && (
+        <div className='absolute bottom-4 right-4'>
+          <Chip label='Removed' color='error' />
+        </div>
+      )}
     </motion.div>
   );
 };
