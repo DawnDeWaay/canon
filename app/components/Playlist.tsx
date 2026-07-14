@@ -262,7 +262,9 @@ const Playlist = ({ id, setMode }: { id: string; setMode: (mode: Mode) => void }
         <motion.div
           className='greybg p-2 flex flex-row gap-1 justify-center items-center rounded-xl cursor-pointer w-26'
           initial={false}
-          animate={{ opacity: 0.9 }}
+          animate={arrowAnim('left')}
+          whileTap={arrowAnim('left')}
+          transition={transition}
           onClick={discardCurrent}
         >
           Discard
@@ -287,7 +289,9 @@ const Playlist = ({ id, setMode }: { id: string; setMode: (mode: Mode) => void }
         <motion.div
           className='greybg p-2 flex flex-row justify-center items-center gap-1 rounded-xl cursor-pointer w-26'
           initial={false}
-          animate={{ opacity: 0.9 }}
+          animate={arrowAnim('right')}
+          whileTap={arrowAnim('right')}
+          transition={transition}
           onClick={keepCurrent}
         >
           <ArrowForward color='inherit' />
