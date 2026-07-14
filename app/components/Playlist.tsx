@@ -322,42 +322,6 @@ const Playlist = ({ id, setMode }: { id: string; setMode: (mode: Mode) => void }
           Finish
           <DoneAll color='inherit' />
         </motion.button>
-        <div className='w-full flex justify-center items-center'>
-          <motion.div
-            className='greybg p-1 flex flex-row gap-1 rounded-xl'
-            initial={false}
-            animate={{ opacity: 0.9 }}
-          >
-            <motion.span
-              className='flex items-center justify-center p-1 rounded-md'
-              animate={arrowAnim('left')}
-              transition={transition}
-            >
-              <ArrowBack color='inherit' />
-            </motion.span>
-            <motion.span
-              className='flex items-center justify-center p-1 rounded-md'
-              animate={arrowAnim('down')}
-              transition={transition}
-            >
-              <ArrowDownward color='inherit' />
-            </motion.span>
-            <motion.span
-              className='flex items-center justify-center p-1 rounded-md'
-              animate={arrowAnim('up')}
-              transition={transition}
-            >
-              <ArrowUpward color='inherit' />
-            </motion.span>
-            <motion.span
-              className='flex items-center justify-center p-1 rounded-md'
-              animate={arrowAnim('right')}
-              transition={transition}
-            >
-              <ArrowForward color='inherit' />
-            </motion.span>
-          </motion.div>
-        </div>
       </div>
       {/* biome-ignore lint/a11y/useMediaCaption: 30s preview has no captions */}
       <audio ref={audioRef} preload='auto' onEnded={() => setMusicPlaying(false)} />
