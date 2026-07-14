@@ -11,7 +11,7 @@ export default function DDR() {
   });
   const transition = { type: 'spring' as const, stiffness: 500, damping: 25 };
   return (
-    <div className='fixed bottom-4 left-4 w-full flex justify-center items-center'>
+    <div className='fixed bottom-4 left-4 w-full flex justify-center items-center z-50'>
       <motion.div
         className='greybg p-1 flex flex-row gap-1 rounded-xl'
         initial={false}
