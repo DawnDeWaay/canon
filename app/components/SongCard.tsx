@@ -1,4 +1,4 @@
-import { Cancel } from '@mui/icons-material';
+import { Cancel, Clear } from '@mui/icons-material';
 import { Chip } from '@mui/material';
 import { motion } from 'motion/react';
 import Image from 'next/image';
@@ -14,12 +14,24 @@ const SongCard = ({
   artist: string[];
   removed: boolean;
 }) => {
+  const rotate = Math.random() * 48 - 24;
+
   return (
     <motion.div
       className='greybg h-104 w-fit p-4 rounded-3xl flex flex-col items-center justify-start relative overflow-hidden'
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
     >
+      {removed && (
+        <motion.div
+          className='absolute top-8 right-6 z-50 text-3xl'
+          initial={false}
+          animate={{ scale: [1.1, 1], rotate }}
+          transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+        >
+          <Clear color='error' fontSize='inherit' />
+        </motion.div>
+      )}
       <div className='relative w-80 aspect-square rounded-xl overflow-hidden'>
         {art ? <Image src={art} alt={name ?? ''} fill className='object-cover' /> : null}
       </div>
@@ -30,9 +42,8 @@ const SongCard = ({
       {removed && (
         <motion.div
           className='absolute bottom-4 right-4'
-          initial={{ scale: 1.1 }}
-          animate={{ scale: 1 }}
-          transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
         >
           <Chip label='Removed' color='error' />
         </motion.div>
