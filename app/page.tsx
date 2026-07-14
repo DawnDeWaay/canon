@@ -12,6 +12,7 @@ import StarField from './components/StarField';
 import Summary from './components/Summary';
 import { useMe } from './hooks/useMe';
 import { usePlaylists } from './hooks/usePlaylists';
+import DDR from './components/DDR';
 
 export type Mode =
   | 'splash'
@@ -66,7 +67,7 @@ export default function Home() {
           </div>
         </main>
       </div>
-
+      <DDR />
       <Attribution />
     </>
   );
