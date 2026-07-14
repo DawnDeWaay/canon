@@ -240,7 +240,14 @@ const Playlist = ({ id, setMode }: { id: string; setMode: (mode: Mode) => void }
                     scale: 1 - clamped * 0.04,
                     opacity: isBuried || isPast ? [1, 0] : 1 - clamped * 0.15,
                   }}
-                  transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+                  transition={{
+                    type: 'spring',
+                    stiffness: 300,
+                    damping: 30,
+                    x: { type: 'spring', stiffness: 300, damping: 30, delay: isPast ? 0.25 : 0 },
+                    y: { type: 'spring', stiffness: 300, damping: 30, delay: isPast ? 0.25 : 0 },
+                    opacity: { delay: isPast ? 0.25 : 0 },
+                  }}
                 >
                   <SongCard
                     name={track.name}
