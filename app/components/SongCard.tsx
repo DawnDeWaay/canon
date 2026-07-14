@@ -26,8 +26,8 @@ const SongCard = ({
       {removed && (
         <motion.div
           className='absolute top-8 right-6 z-50 text-7xl'
-          initial={false}
-          animate={{ scale: [1.1, 1], rotate }}
+          initial={{ scale: 1.1, rotate }}
+          animate={{ scale: [1], rotate }}
           transition={{ type: 'spring', stiffness: 300, damping: 30 }}
         >
           <Clear color='error' fontSize='inherit' />
