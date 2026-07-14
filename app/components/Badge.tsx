@@ -2,7 +2,6 @@
 /** biome-ignore-all lint/a11y/useKeyWithClickEvents: <explanation> */
 
 import { MusicNote } from '@mui/icons-material';
-import { motion } from 'motion/react';
 import type { Mode } from '../page';
 
 const Badge = ({ setMode }: { setMode: (mode: Mode) => void }) => {
@@ -13,7 +12,7 @@ const Badge = ({ setMode }: { setMode: (mode: Mode) => void }) => {
           className='greybg p-1 flex flex-row gap-2 items-center rounded-xl *:justify-center overflow-hidden cursor-pointer'
           onClick={() => setMode('playlists')}
         >
-          <MusicNote />
+          <MusicNote fontSize='inherit' color='inherit' />
           <div className='text-white font-CircularBold text-md mr-1'>Canon</div>
         </div>
       </div>
