@@ -11,6 +11,7 @@ import StarField from './components/StarField';
 import Summary from './components/Summary';
 import { useMe } from './hooks/useMe';
 import { usePlaylists } from './hooks/usePlaylists';
+import Badge from './components/Badge';
 
 export type Mode =
   | 'splash'
@@ -34,6 +35,7 @@ export default function Home() {
 
   return (
     <>
+      <Badge setMode={setMode} />
       {user && (
         <Nameplate
           name={user?.display_name ?? ''}
