@@ -10,7 +10,7 @@ const Attribution = () => {
     <div className='fixed right-4 bottom-4 z-50'>
       <div
         className='text-white font-Circular text-md mr-1 hover:underline'
-        onClick={() => openInNewTab('https://example.com')}
+        onClick={() => openInNewTab('https://dawndewaay.dev/')}
       >
         © {new Date().getFullYear()} Dawn DeWaay III {'<3'}
       </div>
