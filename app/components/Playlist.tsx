@@ -225,6 +225,8 @@ const Playlist = ({ id, setMode }: { id: string; setMode: (mode: Mode) => void }
               const clamped = Math.min(Math.max(offset, 0), visibleDepth);
               const isBuried = offset > visibleDepth;
               const isPast = offset < 0;
+              const wasDiscarded = discarded.includes(track.id);
+              const pastDirection = wasDiscarded ? -1 : 1;
               return (
                 <motion.div
                   key={track.id ?? index}
@@ -232,9 +234,9 @@ const Playlist = ({ id, setMode }: { id: string; setMode: (mode: Mode) => void }
                   style={{ zIndex: playlist.tracks.length - index }}
                   initial={false}
                   animate={{
-                    x: isPast ? -200 : 0,
+                    x: isPast ? 200 * pastDirection : 0,
                     y: clamped * 12,
-                    rotate: isPast ? -15 : 0,
+                    rotate: isPast ? 15 * pastDirection : 0,
                     scale: 1 - clamped * 0.04,
                     opacity: isBuried || isPast ? 0 : 1 - clamped * 0.15,
                   }}
