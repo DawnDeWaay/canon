@@ -32,9 +32,9 @@ const SongCard = ({
           initial={{ scale: 1.5 }}
           animate={{ scale: [1.5, 0.9, 1.05, 1] }}
           transition={{
-            duration: 0.3,
-            times: [0, 0.4, 0.8, 1],
-            ease: ['easeIn', 'easeOut', 'easeOut'],
+            duration: 0.2,
+            times: [0, 0.3, 0.65, 1],
+            ease: 'linear',
           }}
         >
           <Cancel color='inherit' fontSize='inherit' />

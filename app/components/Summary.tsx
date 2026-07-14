@@ -159,7 +159,7 @@ const Summary = ({ mode, setMode }: { mode: SummaryMode; setMode: (mode: Mode) =
           {isPending ? 'Removing…' : discardedTracks.length === 0 ? 'Done' : 'Remove & Finish'}
           <DoneAll color='inherit' />
         </motion.button>
-        <motion.button
+        {/* <motion.button
           type='button'
           disabled={busy}
           className='cursor-pointer text-white px-4 py-2 mt-4 rounded-xl flex items-center gap-2 text-center disabled:opacity-60 disabled:cursor-not-allowed'
@@ -179,7 +179,7 @@ const Summary = ({ mode, setMode }: { mode: SummaryMode; setMode: (mode: Mode) =
               ? 'Done'
               : 'Remove & Archive to New Playlist'}
           <DoneAll color='inherit' />
-        </motion.button>
+        </motion.button> */}
       </div>
 
       <div className='w-full flex justify-center items-center mt-2'>
