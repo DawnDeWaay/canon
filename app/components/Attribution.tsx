@@ -1,7 +1,17 @@
+/** biome-ignore-all lint/a11y/useKeyWithClickEvents: <explanation> */
+/** biome-ignore-all lint/a11y/noStaticElementInteractions: <explanation> */
 const Attribution = () => {
+  const openInNewTab = (url: string) => {
+    const newWindow = window.open(url, '_blank', 'noopener,noreferrer');
+    if (newWindow) newWindow.opener = null;
+  };
+
   return (
     <div className='fixed right-4 bottom-4 z-50'>
-      <div className='text-white font-CircularBold text-md mr-1'>
+      <div
+        className='text-white font-Circular text-md mr-1 hover:underline'
+        onClick={() => openInNewTab('https://example.com')}
+      >
         © {new Date().getFullYear()} Dawn DeWaay III {'<3'}
       </div>
     </div>

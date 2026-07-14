@@ -3,6 +3,7 @@
 import { AnimatePresence } from 'motion/react';
 import { useEffect, useState } from 'react';
 import Splash from '@/app/components/Splash';
+import Attribution from './components/Attribution';
 import Nameplate from './components/Nameplate';
 import Playlist from './components/Playlist';
 import Playlists from './components/Playlists';
@@ -10,7 +11,6 @@ import StarField from './components/StarField';
 import Summary from './components/Summary';
 import { useMe } from './hooks/useMe';
 import { usePlaylists } from './hooks/usePlaylists';
-import Attribution from './components/Attribution';
 
 export type Mode =
   | 'splash'
