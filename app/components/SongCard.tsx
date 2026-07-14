@@ -1,4 +1,4 @@
-import { Cancel, Clear } from '@mui/icons-material';
+import { Cancel } from '@mui/icons-material';
 import { Chip } from '@mui/material';
 import { motion } from 'motion/react';
 import Image from 'next/image';
@@ -15,7 +15,9 @@ const SongCard = ({
   artist: string[];
   removed: boolean;
 }) => {
-  const [rotate] = useState(() => Math.random() * 48 - 24);
+  const [rotate] = useState(() => Math.random() * 40 - 20);
+  const [x] = useState(() => Math.random() * 32 - 16);
+  const [y] = useState(() => Math.random() * 32 - 16);
 
   return (
     <motion.div
@@ -25,12 +27,12 @@ const SongCard = ({
     >
       {removed && (
         <motion.div
-          className='absolute top-8 right-6 z-50 text-7xl'
-          initial={{ scale: 1.1, rotate }}
-          animate={{ scale: [1], rotate }}
+          className='absolute top-6 right-6 z-50 text-8xl text-[#FB2B37]'
+          initial={{ scale: 1.1, rotate, x, y }}
+          animate={{ scale: [1], rotate, x, y }}
           transition={{ type: 'spring', stiffness: 300, damping: 30 }}
         >
-          <Clear color='error' fontSize='inherit' />
+          <Cancel color='inherit' fontSize='inherit' />
         </motion.div>
       )}
       <div className='relative w-80 aspect-square rounded-xl overflow-hidden'>
@@ -46,7 +48,7 @@ const SongCard = ({
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
         >
-          <Chip label='Removed' color='error' />
+          <Chip label='Removed' sx={{ backgroundColor: '#FB2B37', color: '#fff' }} />
         </motion.div>
       )}
     </motion.div>
