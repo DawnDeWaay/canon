@@ -29,8 +29,8 @@ const SongCard = ({
         <motion.div
           className='absolute top-6 right-6 z-50 text-8xl text-[#FB2B37]'
           style={{ rotate, x, y }}
-          initial={{ scale: 1.5, opacity: 0.8 }}
-          animate={{ scale: [1.5, 0.9, 1.05, 1], opacity: [0, 1, 1, 1] }}
+          initial={{ scale: 1.5 }}
+          animate={{ scale: [1.5, 0.9, 1.05, 1] }}
           transition={{
             duration: 0.35,
             times: [0, 0.55, 0.8, 1],
