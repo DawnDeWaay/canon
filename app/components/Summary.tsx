@@ -22,12 +22,6 @@ const Summary = ({ mode, setMode }: { mode: SummaryMode; setMode: (mode: Mode) =
     isError: isArchiveError,
     error: archiveError,
   } = useArchiveTracks(mode.playlistId);
-
-  // Spotify only lets you delete tracks from playlists you own (or
-  // collaborate on). Playlists you merely follow — including editorial and
-  // algorithmic ones — will 403 the DELETE endpoint even with the modify
-  // scopes granted. Detect this up front so we can disable the action and
-  // explain instead of firing a request that's guaranteed to fail.
   const isOwner = Boolean(me?.id && playlist?.ownerId && me.id === playlist.ownerId);
 
   const parseSpotifyDetail = (raw: string): string => {

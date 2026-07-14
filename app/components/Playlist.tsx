@@ -236,7 +236,7 @@ const Playlist = ({ id, setMode }: { id: string; setMode: (mode: Mode) => void }
                     y: clamped * 12,
                     rotate: isPast ? -15 : 0,
                     scale: 1 - clamped * 0.04,
-                    opacity: isBuried ? 0 : isPast ? 1 : 1 - clamped * 0.15,
+                    opacity: isBuried || isPast ? 0 : 1 - clamped * 0.15,
                   }}
                   transition={{ type: 'spring', stiffness: 300, damping: 30 }}
                 >
