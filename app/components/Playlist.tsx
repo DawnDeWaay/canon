@@ -144,8 +144,6 @@ const Playlist = ({ id, setMode }: { id: string; setMode: (mode: Mode) => void }
 
   useEffect(() => {
     const handleDown = (e: KeyboardEvent) => {
-      // Ignore auto-repeat so holding an arrow doesn't rapid-fire
-      // discard/keep across many tracks.
       if (e.repeat) return;
 
       if (e.key === ' ' || e.code === 'Space') {
@@ -162,8 +160,6 @@ const Playlist = ({ id, setMode }: { id: string; setMode: (mode: Mode) => void }
         next.add(dir);
         return next;
       });
-      // Left = discard, right = keep (matches on-screen buttons).
-      // Down = skip forward, up = go back — neither records a decision.
       switch (dir) {
         case 'left':
           discardCurrent();
@@ -296,7 +292,7 @@ const Playlist = ({ id, setMode }: { id: string; setMode: (mode: Mode) => void }
           Keep
         </motion.div>
       </div>
-      <div className='w-full flex justify-center items-center mt-2'>
+      <div className='w-full flex justify-center items-center mt-2 mb-16'>
         <div
           className='text-sm text-gray-500 hover:underline cursor-pointer'
           onClick={() => {
