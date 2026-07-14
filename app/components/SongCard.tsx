@@ -28,9 +28,14 @@ const SongCard = ({
       {removed && (
         <motion.div
           className='absolute top-6 right-6 z-50 text-8xl text-[#FB2B37]'
-          initial={{ scale: 1.1, rotate, x, y }}
-          animate={{ scale: [1], rotate, x, y }}
-          transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+          style={{ rotate, x, y }}
+          initial={{ scale: 2, opacity: 0 }}
+          animate={{ scale: [2, 0.9, 1.05, 1], opacity: [0, 1, 1, 1] }}
+          transition={{
+            duration: 0.35,
+            times: [0, 0.55, 0.8, 1],
+            ease: ['easeIn', 'easeOut', 'easeOut'],
+          }}
         >
           <Cancel color='inherit' fontSize='inherit' />
         </motion.div>

@@ -244,10 +244,10 @@ const Playlist = ({ id, setMode }: { id: string; setMode: (mode: Mode) => void }
                     type: 'spring',
                     stiffness: 300,
                     damping: 30,
-                    rotate: { delay: isPast ? 0.15 : 0 },
-                    x: { delay: isPast ? 0.15 : 0 },
-                    y: { delay: isPast ? 0.15 : 0 },
-                    opacity: { delay: isPast ? 0.15 : 0 },
+                    rotate: { delay: isPast && wasDiscarded ? 0.15 : 0 },
+                    x: { delay: isPast && wasDiscarded ? 0.15 : 0 },
+                    y: { delay: isPast && wasDiscarded ? 0.15 : 0 },
+                    opacity: { delay: isPast && wasDiscarded ? 0.15 : 0 },
                   }}
                 >
                   <SongCard
