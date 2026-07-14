@@ -232,7 +232,7 @@ const Playlist = ({ id, setMode }: { id: string; setMode: (mode: Mode) => void }
                   style={{ zIndex: playlist.tracks.length - index }}
                   initial={false}
                   animate={{
-                    x: isPast ? -600 : 0,
+                    x: isPast ? -200 : 0,
                     y: clamped * 12,
                     rotate: isPast ? -15 : 0,
                     scale: 1 - clamped * 0.04,
