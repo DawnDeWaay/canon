@@ -28,9 +28,14 @@ const SongCard = ({
         <div className='text-gray-400 text-sm mt-1 w-full text-start'>{artist.join(', ')}</div>
       </div>
       {removed && (
-        <div className='absolute bottom-4 right-4'>
+        <motion.div
+          className='absolute bottom-4 right-4'
+          initial={{ scale: 1.1 }}
+          animate={{ scale: 1 }}
+          transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+        >
           <Chip label='Removed' color='error' />
-        </div>
+        </motion.div>
       )}
     </motion.div>
   );
