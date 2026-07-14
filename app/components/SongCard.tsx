@@ -32,8 +32,8 @@ const SongCard = ({
           initial={{ scale: 1.5 }}
           animate={{ scale: [1.5, 0.9, 1.05, 1] }}
           transition={{
-            duration: 0.35,
-            times: [0, 0.55, 0.8, 1],
+            duration: 0.3,
+            times: [0, 0.4, 0.8, 1],
             ease: ['easeIn', 'easeOut', 'easeOut'],
           }}
         >
