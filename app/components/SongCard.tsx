@@ -2,6 +2,7 @@ import { Cancel, Clear } from '@mui/icons-material';
 import { Chip } from '@mui/material';
 import { motion } from 'motion/react';
 import Image from 'next/image';
+import { useState } from 'react';
 
 const SongCard = ({
   name,
@@ -14,7 +15,7 @@ const SongCard = ({
   artist: string[];
   removed: boolean;
 }) => {
-  const rotate = Math.random() * 48 - 24;
+  const [rotate] = useState(() => Math.random() * 48 - 24);
 
   return (
     <motion.div
@@ -24,7 +25,7 @@ const SongCard = ({
     >
       {removed && (
         <motion.div
-          className='absolute top-8 right-6 z-50 text-5xl'
+          className='absolute top-8 right-6 z-50 text-7xl'
           initial={false}
           animate={{ scale: [1.1, 1], rotate }}
           transition={{ type: 'spring', stiffness: 300, damping: 30 }}
