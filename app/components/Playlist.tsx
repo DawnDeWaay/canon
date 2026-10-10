@@ -227,6 +227,7 @@ const Playlist = ({ id, setMode }: { id: string; setMode: (mode: Mode) => void }
               const isPast = offset < 0;
               const wasDiscarded = discarded.includes(track.id);
               const pastDirection = wasDiscarded ? -1 : 1;
+              
               return (
                 <motion.div
                   key={track.id ?? index}
