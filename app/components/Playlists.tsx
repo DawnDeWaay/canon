@@ -24,6 +24,8 @@ const Playlists = ({
       >
         Pick a Playlist
       </motion.div>
+
+      
       <div className='flex flex-col gap-1 w-full rounded-2xl overflow-hidden'>
         {playlists
           ?.filter((e) => !!myId && (e.ownerId === myId || e.collaborative))
